@@ -32,7 +32,7 @@ export default function StylePickerScreen() {
         .update({ has_onboarded: true })
         .eq('id', user.id);
       if (updateError) throw updateError;
-      router.replace('/home');
+      router.replace('/(tabs)/discover');
     } catch (err) {
       setDoneError(err.message || 'Something went wrong');
     } finally {

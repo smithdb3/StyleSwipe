@@ -648,7 +648,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 7.4 — Color Picker screen
 
-- [ ] 
+- [x] 
 
 1. Display color tags: black, white, navy, etc.
 2. Multi-select; "Next" → Category Picker
@@ -658,7 +658,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 7.5 — Category Picker screen
 
-- [ ] 
+- [x] 
 
 1. Display category tags: tops, bottoms, dresses, etc.
 2. "Complete" → call `supabase.from('profiles').upsert({ id: user.id, has_onboarded: true, preferred_styles: [...], preferred_colors: [...], preferred_categories: [...] })`
@@ -672,7 +672,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 8.1 — Create Discover tab/screen
 
-- [ ] 
+- [x] 
 
 1. Create `app/(tabs)/index.jsx` (or equivalent for Discover)
 2. Screen fetches feed on mount
@@ -682,7 +682,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 8.2 — Implement `useSwipeFeed` hook
 
-- [ ] 
+- [x] 
 
 1. Create `hooks/useSwipeFeed.js` (or `.ts`)
 2. State: `queue` (array of items), `loading`, `error`
@@ -695,7 +695,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 8.3 — Create SwipeCard component
 
-- [ ] 
+- [x] 
 
 1. Install and use `react-native-gesture-handler` and `react-native-reanimated`
 2. Wrap card in `GestureDetector` with `Pan` gesture
@@ -708,7 +708,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 8.4 — Create card stack
 
-- [ ] 
+- [x] 
 
 1. Render 3 cards: top card interactive, next 2 beneath (scaled 0.95, offset)
 2. Use `position: absolute` or `zIndex` so cards stack
@@ -720,7 +720,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 8.5 — Wire Discover screen to hook and cards
 
-- [ ] 
+- [x] 
 
 1. Call `useSwipeFeed(userId)`
 2. Map `queue` to card stack; pass top item to SwipeCard
