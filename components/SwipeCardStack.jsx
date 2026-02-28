@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -53,7 +53,7 @@ function ExitingCard({ item, direction, onComplete, startTranslateX = 0, startTr
   );
 }
 
-export function SwipeCardStack({ items, onSwipe, renderEmpty }) {
+const SwipeCardStackComponent = forwardRef(({ items, onSwipe, renderEmpty, onPressLike, onPressSkip }, ref) => {
   const [exitingCard, setExitingCard] = useState(null);
 
   const visible = items.slice(0, 3);
@@ -74,6 +74,23 @@ export function SwipeCardStack({ items, onSwipe, renderEmpty }) {
     },
     [visible, displayTop]
   );
+
+  const handleProgrammaticLike = useCallback(() => {
+    if (displayTop?.id) {
+      handleSwipeFromCard(displayTop.id, 'like', 0, 0, 0);
+    }
+  }, [displayTop?.id, handleSwipeFromCard]);
+
+  const handleProgrammaticSkip = useCallback(() => {
+    if (displayTop?.id) {
+      handleSwipeFromCard(displayTop.id, 'skip', 0, 0, 0);
+    }
+  }, [displayTop?.id, handleSwipeFromCard]);
+
+  useImperativeHandle(ref, () => ({
+    swipeLike: handleProgrammaticLike,
+    swipeSkip: handleProgrammaticSkip,
+  }));
 
   const handleExitingComplete = useCallback(
     (itemId, direction) => {
@@ -137,7 +154,9 @@ export function SwipeCardStack({ items, onSwipe, renderEmpty }) {
       ) : null}
     </View>
   );
-}
+});
+
+export const SwipeCardStack = SwipeCardStackComponent;
 
 const styles = StyleSheet.create({
   container: {

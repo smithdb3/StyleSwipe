@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
@@ -59,6 +59,7 @@ export function useSwipeFeed(userId, initialLimit = 20) {
   const [queue, setQueue] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const swipeHistoryRef = useRef([]);
 
   const fetchMore = useCallback(
     async (limit = initialLimit) => {
@@ -92,6 +93,10 @@ export function useSwipeFeed(userId, initialLimit = 20) {
       try {
         await postSubmitSwipe(token, userId, itemId, direction);
         setQueue((prev) => {
+          const swipedItem = prev.find((item) => item.id === itemId);
+          if (swipedItem) {
+            swipeHistoryRef.current = [swipedItem, ...swipeHistoryRef.current].slice(0, 3);
+          }
           const next = prev.filter((item) => item.id !== itemId);
           if (next.length < 3) setTimeout(() => fetchMore(initialLimit), 0);
           return next;
@@ -103,6 +108,13 @@ export function useSwipeFeed(userId, initialLimit = 20) {
     [userId, initialLimit, fetchMore]
   );
 
+  const undoLastSwipe = useCallback(() => {
+    const [last, ...rest] = swipeHistoryRef.current;
+    if (!last) return;
+    swipeHistoryRef.current = rest;
+    setQueue((prev) => [last, ...prev]);
+  }, []);
+
   useEffect(() => {
     if (!userId) {
       setLoading(false);
@@ -111,5 +123,5 @@ export function useSwipeFeed(userId, initialLimit = 20) {
     fetchMore(initialLimit);
   }, [userId]);
 
-  return { queue, loading, error, submitSwipe, fetchMore };
+  return { queue, loading, error, submitSwipe, fetchMore, undoLastSwipe };
 }
