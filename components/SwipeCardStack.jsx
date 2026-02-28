@@ -7,7 +7,7 @@ const { width: CARD_WIDTH, height: CARD_HEIGHT } = CARD_DIMENSIONS;
 
 /**
  * Back card: shows the next item's image when we're in "exiting" state.
- * Only rendered when exitingItemId is set and visible[1] exists.
+ * Only rendered when exitingId is set and nextItem exists. Do not reveal next image until current card is decided.
  */
 function BackCardWithImage({ item }) {
   const [imageError, setImageError] = useState(false);
@@ -29,40 +29,37 @@ function BackCardWithImage({ item }) {
 }
 
 export function SwipeCardStack({ items, onSwipe, renderEmpty }) {
-  const [exitingItemId, setExitingItemId] = useState(null);
+  const [exitingId, setExitingId] = useState(null);
   const [exitDirection, setExitDirection] = useState(null);
 
   const visible = items.slice(0, 3);
-  const displayTop = visible[0]; // Always first item until parent removes it
+  const topItem = items[0] ?? null;
   const nextItem = visible[1];
+  const isExiting = topItem && exitingId === topItem.id;
 
-  // Prefetch next card's image so it's ready when we reveal it
+  // Prefetch next card's image so it's ready when we reveal it after swipe
   useEffect(() => {
     if (nextItem?.image_url) {
       Image.prefetch(nextItem.image_url).catch(() => {});
     }
   }, [nextItem?.image_url]);
 
-  const handleSwipeStart = useCallback((itemId, direction) => {
-    setExitingItemId(itemId);
-    setExitDirection(direction);
-  }, []);
+  const handleSwipeStart = useCallback(
+    (itemId, direction, _startX, _startY, _startRotation) => {
+      setExitingId(itemId);
+      setExitDirection(direction);
+    },
+    []
+  );
 
   const handleExitComplete = useCallback(
     (itemId, direction) => {
       onSwipe(itemId, direction);
+      setExitingId(null);
+      setExitDirection(null);
     },
     [onSwipe]
   );
-
-  // Clear exiting state only after parent has removed the item from the list
-  useEffect(() => {
-    if (!exitingItemId) return;
-    if (!items.some((i) => i.id === exitingItemId)) {
-      setExitingItemId(null);
-      setExitDirection(null);
-    }
-  }, [exitingItemId, items]);
 
   if (items.length === 0) {
     if (renderEmpty) return renderEmpty();
@@ -75,14 +72,14 @@ export function SwipeCardStack({ items, onSwipe, renderEmpty }) {
 
   return (
     <View style={styles.container}>
-      {/* When exiting: show next card with image behind the sliding top card */}
-      {exitingItemId && nextItem ? (
+      {/* When exiting: show next card image behind the sliding top card (do not reveal until decided) */}
+      {exitingId && nextItem ? (
         <View style={styles.backCardWrap}>
           <BackCardWithImage item={nextItem} />
         </View>
       ) : null}
-      {/* Optional: gray placeholders when not exiting (behind top card) */}
-      {!exitingItemId && visible.length > 1 ? (
+      {/* Gray placeholders when not exiting (behind top card) */}
+      {!exitingId && visible.length > 1 ? (
         visible.slice(1, 3).map((item, index) => (
           <View
             key={`back-${index}-${item.id}`}
@@ -92,17 +89,17 @@ export function SwipeCardStack({ items, onSwipe, renderEmpty }) {
           </View>
         ))
       ) : null}
-      {/* Top card (always visible[0]); same instance animates off when isExiting */}
-      {displayTop ? (
+      {/* Top card: same instance animates off when isExiting, then onExitComplete */}
+      {topItem ? (
         <View style={styles.topCard}>
           <SwipeCard
-            key={displayTop.id}
-            item={displayTop}
-            enabled={!exitingItemId}
-            isExiting={exitingItemId === displayTop.id}
-            exitDirection={exitingItemId === displayTop.id ? exitDirection : null}
+            key={topItem.id}
+            item={topItem}
             onSwipeStart={handleSwipeStart}
             onExitComplete={handleExitComplete}
+            isExiting={isExiting}
+            exitDirection={isExiting ? exitDirection : null}
+            enabled={!isExiting}
           />
         </View>
       ) : null}

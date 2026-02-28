@@ -84,6 +84,14 @@ export function SwipeCard({
     ],
   }));
 
+  const likeOpacity = useAnimatedStyle(() => ({
+    opacity: Math.min(Math.max(translateX.value / 80, 0), 1),
+  }));
+
+  const nopeOpacity = useAnimatedStyle(() => ({
+    opacity: Math.min(Math.max(-translateX.value / 80, 0), 1),
+  }));
+
   if (!item?.image_url) return null;
 
   return (
@@ -101,6 +109,12 @@ export function SwipeCard({
             onError={() => setImageError(true)}
           />
         )}
+        <Animated.View style={[styles.likeLabel, likeOpacity]}>
+          <Text style={styles.likeLabelText}>LIKE</Text>
+        </Animated.View>
+        <Animated.View style={[styles.nopeLabel, nopeOpacity]}>
+          <Text style={styles.nopeLabelText}>NOPE</Text>
+        </Animated.View>
       </Animated.View>
     </GestureDetector>
   );
@@ -128,6 +142,38 @@ const styles = StyleSheet.create({
   placeholderText: {
     fontSize: 14,
     color: '#737373',
+  },
+  likeLabel: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    borderWidth: 3,
+    borderColor: '#2ecc71',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    transform: [{ rotate: '-15deg' }],
+  },
+  likeLabelText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#2ecc71',
+  },
+  nopeLabel: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    borderWidth: 3,
+    borderColor: '#e74c3c',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    transform: [{ rotate: '15deg' }],
+  },
+  nopeLabelText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#e74c3c',
   },
 });
 
