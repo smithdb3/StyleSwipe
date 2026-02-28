@@ -307,7 +307,7 @@ CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.u
 
 ### Step 3.1 — Create `data` directory and mock files
 
-- [ ] 
+- [x] 
 
 1. In project root, create directory `data/`
 2. Create file `data/mock-inspiration.json` with this structure (expand to 20+ items):
@@ -332,7 +332,7 @@ CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.u
 
 ### Step 3.2 — Create `data/mock-products.json`
 
-- [ ] 
+- [x] 
 
 1. Create `data/mock-products.json` with structure:
 

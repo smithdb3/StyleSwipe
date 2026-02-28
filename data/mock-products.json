@@ -1,0 +1,204 @@
+{
+  "items": [
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440001",
+      "external_id": "mock-1",
+      "title": "Classic Black Tee",
+      "brand": "Mock Brand",
+      "image_url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
+      "price": "29.00",
+      "buy_url": "https://example.com/product/1",
+      "tags": ["minimalist", "black", "cotton", "tops", "casual"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440002",
+      "external_id": "mock-2",
+      "title": "Bohemian Floral Maxi Dress",
+      "brand": "Wanderlust",
+      "image_url": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400",
+      "price": "89.00",
+      "buy_url": "https://example.com/product/2",
+      "tags": ["bohemian", "floral", "silk", "dresses", "romantic"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440003",
+      "external_id": "mock-3",
+      "title": "High-Waist Denim Jeans",
+      "brand": "Blue Label",
+      "image_url": "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400",
+      "price": "79.00",
+      "buy_url": "https://example.com/product/3",
+      "tags": ["american", "denim", "casual", "bottoms", "high-waist"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440004",
+      "external_id": "mock-4",
+      "title": "Navy Wool Blazer",
+      "brand": "Formal Co",
+      "image_url": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400",
+      "price": "199.00",
+      "buy_url": "https://example.com/product/4",
+      "tags": ["classic", "navy", "wool", "formal", "outerwear"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440005",
+      "external_id": "mock-5",
+      "title": "Black Yoga Leggings",
+      "brand": "Active Life",
+      "image_url": "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400",
+      "price": "54.00",
+      "buy_url": "https://example.com/product/5",
+      "tags": ["sporty", "black", "activewear", "workout", "fitted"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440006",
+      "external_id": "mock-6",
+      "title": "Vintage Linen Shirt",
+      "brand": "Retro Threads",
+      "image_url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400",
+      "price": "65.00",
+      "buy_url": "https://example.com/product/6",
+      "tags": ["vintage", "earth", "linen", "casual", "tops"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440007",
+      "external_id": "mock-7",
+      "title": "Pastel Cotton Cardigan",
+      "brand": "Soft Style",
+      "image_url": "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400",
+      "price": "72.00",
+      "buy_url": "https://example.com/product/7",
+      "tags": ["preppy", "pastel", "cotton", "weekend", "tops"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440008",
+      "external_id": "mock-8",
+      "title": "Pink Floral Midi Dress",
+      "brand": "Bloom",
+      "image_url": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400",
+      "price": "95.00",
+      "buy_url": "https://example.com/product/8",
+      "tags": ["romantic", "pink", "floral", "dresses", "date"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440009",
+      "external_id": "mock-9",
+      "title": "Leather Ankle Boots",
+      "brand": "Urban Step",
+      "image_url": "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400",
+      "price": "149.00",
+      "buy_url": "https://example.com/product/9",
+      "tags": ["modern", "brown", "leather", "shoes", "casual"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440010",
+      "external_id": "mock-10",
+      "title": "Oversized Denim Jacket",
+      "brand": "Street Style",
+      "image_url": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400",
+      "price": "118.00",
+      "buy_url": "https://example.com/product/10",
+      "tags": ["edgy", "blue", "denim", "streetwear", "oversized"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440011",
+      "external_id": "mock-11",
+      "title": "White Loungewear Set",
+      "brand": "Nordic Home",
+      "image_url": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400",
+      "price": "68.00",
+      "buy_url": "https://example.com/product/11",
+      "tags": ["scandinavian", "white", "minimalist", "loungewear", "relaxed"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440012",
+      "external_id": "mock-12",
+      "title": "Black Velvet Party Dress",
+      "brand": "Glamour",
+      "image_url": "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=400",
+      "price": "165.00",
+      "buy_url": "https://example.com/product/12",
+      "tags": ["glam", "black", "velvet", "party", "dresses"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440013",
+      "external_id": "mock-13",
+      "title": "Blue Cotton Oxford Shirt",
+      "brand": "Classic Wear",
+      "image_url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400",
+      "price": "58.00",
+      "buy_url": "https://example.com/product/13",
+      "tags": ["classic", "blue", "cotton", "office", "tops"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440014",
+      "external_id": "mock-14",
+      "title": "Graphic Print Hoodie",
+      "brand": "Urban Art",
+      "image_url": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400",
+      "price": "75.00",
+      "buy_url": "https://example.com/product/14",
+      "tags": ["artsy", "graphic", "cotton", "streetwear", "casual"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440015",
+      "external_id": "mock-15",
+      "title": "Gray Wool Overcoat",
+      "brand": "Executive",
+      "image_url": "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=400",
+      "price": "249.00",
+      "buy_url": "https://example.com/product/15",
+      "tags": ["formal", "gray", "wool", "office", "outerwear"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440016",
+      "external_id": "mock-16",
+      "title": "Striped Breton Top",
+      "brand": "Parisian",
+      "image_url": "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400",
+      "price": "62.00",
+      "buy_url": "https://example.com/product/16",
+      "tags": ["french", "navy", "striped", "tops", "casual"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440017",
+      "external_id": "mock-17",
+      "title": "Beach Cover-Up",
+      "brand": "Sun & Sand",
+      "image_url": "https://images.unsplash.com/photo-1519046904884-53103b34b206?w=400",
+      "price": "45.00",
+      "buy_url": "https://example.com/product/17",
+      "tags": ["beach", "pastel", "swimwear", "casual", "relaxed"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440018",
+      "external_id": "mock-18",
+      "title": "Minimalist Linen Blouse",
+      "brand": "Zen Wear",
+      "image_url": "https://images.unsplash.com/photo-1564257631407-2f72f7658f1b?w=400",
+      "price": "78.00",
+      "buy_url": "https://example.com/product/18",
+      "tags": ["japanese", "neutral", "linen", "minimalist", "tops"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440019",
+      "external_id": "mock-19",
+      "title": "Leather Crossbody Bag",
+      "brand": "Handcrafted",
+      "image_url": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400",
+      "price": "185.00",
+      "buy_url": "https://example.com/product/19",
+      "tags": ["classic", "brown", "leather", "accessories", "bags"]
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440020",
+      "external_id": "mock-20",
+      "title": "White Sneakers",
+      "brand": "Clean Step",
+      "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
+      "price": "89.00",
+      "buy_url": "https://example.com/product/20",
+      "tags": ["modern", "white", "casual", "shoes", "sporty"]
+    }
+  ]
+}
