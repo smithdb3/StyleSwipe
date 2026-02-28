@@ -3,6 +3,10 @@ description: Application UI and frontend rules.
 alwaysApply: true
 ---
 
+# Logo
+
+- Use **`misc/logo_cropped.png`** as the logo for all branding and UI applications across the entire application.
+
 # Colors and Theming
 
 - Define a single palette and use it consistently across screens.
