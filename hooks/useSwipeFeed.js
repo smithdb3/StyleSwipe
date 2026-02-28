@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'expo-router';
 import { supabase } from '../lib/supabase';
+import { throwWithStatus } from '../lib/errorUtils';
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 
@@ -19,6 +21,7 @@ async function fetchSwipeFeed(accessToken, userId, limit = 20) {
       const data = JSON.parse(body);
       if (data.message) message = data.message;
     } catch (_) {}
+    if (res.status === 401) throwWithStatus(401, message);
     throw new Error(message);
   }
   const data = await res.json();
@@ -46,6 +49,7 @@ async function postSubmitSwipe(accessToken, userId, itemId, direction) {
       const data = JSON.parse(body);
       if (data.message) message = data.message;
     } catch (_) {}
+    if (res.status === 401) throwWithStatus(401, message);
     throw new Error(message);
   }
 }
@@ -56,6 +60,7 @@ async function postSubmitSwipe(accessToken, userId, itemId, direction) {
  * Fetches from swipe-feed (GET query params); submitSwipe calls submit-swipe and removes from queue; refetches when queue.length < 3.
  */
 export function useSwipeFeed(userId, initialLimit = 20) {
+  const router = useRouter();
   const [queue, setQueue] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,7 +80,13 @@ export function useSwipeFeed(userId, initialLimit = 20) {
         const items = await fetchSwipeFeed(token, userId, limit);
         setQueue((prev) => [...prev, ...items]);
       } catch (e) {
-        setError(e instanceof Error ? e : new Error(String(e)));
+        const err = e instanceof Error ? e : new Error(String(e));
+        if (err.status === 401) {
+          await supabase.auth.signOut();
+          router.replace('/sign-up');
+          return;
+        }
+        setError(err);
       } finally {
         setLoading(false);
       }
@@ -97,6 +108,12 @@ export function useSwipeFeed(userId, initialLimit = 20) {
           return next;
         });
       } catch (e) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        if (err.status === 401) {
+          await supabase.auth.signOut();
+          router.replace('/sign-up');
+          return;
+        }
         console.error('Submit swipe error:', e);
       }
     },

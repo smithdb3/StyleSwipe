@@ -851,7 +851,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 12.1 — Define tab layout
 
-- [ ] 
+- [x] 
 
 1. Create `app/(tabs)/_layout.jsx`
 2. Tabs: Discover (index), My Style, Recommendations, Profile
@@ -862,7 +862,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 12.2 — Auth gate
 
-- [ ] 
+- [x] 
 
 1. If no session: show Sign Up / Login (or redirect to auth stack)
 2. If session exists and `has_onboarded` false: redirect to onboarding
@@ -875,7 +875,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 13.1 — Global error handling
 
-- [ ] 
+- [x] 
 
 1. Wrap app in error boundary (optional)
 2. For network errors: show "Check your connection" + Retry
@@ -886,7 +886,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 13.2 — Placeholder for dead images
 
-- [ ] 
+- [x] 
 
 1. Use `Image` component with `onError` handler
 2. On error: show fallback image (e.g. `assets/placeholder-card.png`)

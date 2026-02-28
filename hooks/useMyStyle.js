@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'expo-router';
 import { supabase } from '../lib/supabase';
+import { throwWithStatus } from '../lib/errorUtils';
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 
@@ -35,6 +37,7 @@ async function fetchMyStyleItems(accessToken, userId) {
       const data = JSON.parse(body);
       if (data.message) message = data.message;
     } catch (_) {}
+    if (res.status === 401) throwWithStatus(401, message);
     throw new Error(message);
   }
   const data = await res.json();
@@ -47,6 +50,7 @@ async function fetchMyStyleItems(accessToken, userId) {
  * Returns { items, topTags, loading, error, refetch }.
  */
 export function useMyStyle(userId) {
+  const router = useRouter();
   const [items, setItems] = useState([]);
   const [tagScores, setTagScores] = useState({});
   const [loading, setLoading] = useState(true);
@@ -70,7 +74,13 @@ export function useMyStyle(userId) {
       setItems(fetchedItems);
       setTagScores(profileResult?.data?.tag_scores ?? {});
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const err = e instanceof Error ? e : new Error(String(e));
+      if (err.status === 401) {
+        await supabase.auth.signOut();
+        router.replace('/sign-up');
+        return;
+      }
+      setError(err);
     } finally {
       setLoading(false);
     }

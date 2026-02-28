@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
 import { useMyStyle } from '../../hooks/useMyStyle';
 import { spacing, colors, typography, radii, minTouchTarget } from '../../constants/theme';
+import { isNetworkError } from '../../lib/errorUtils';
 
 const NUM_COLUMNS = 2;
 const ASPECT_RATIO = 5 / 4; // height : width = 5 : 4
@@ -35,10 +36,20 @@ function StyleDnaBanner({ topTags }) {
 }
 
 function GridItem({ item }) {
+  const [imageError, setImageError] = useState(false);
   if (!item?.image_url) return null;
   return (
     <View style={styles.gridItem}>
-      <Image source={{ uri: item.image_url }} style={styles.gridImage} resizeMode="cover" />
+      {imageError ? (
+        <View style={styles.gridImagePlaceholder} />
+      ) : (
+        <Image
+          source={{ uri: item.image_url }}
+          style={styles.gridImage}
+          resizeMode="cover"
+          onError={() => setImageError(true)}
+        />
+      )}
     </View>
   );
 }
@@ -81,7 +92,9 @@ export default function MyStyleScreen() {
     return (
       <View style={[styles.container, padding]}>
         <View style={styles.centered}>
-          <Text style={styles.errorText}>Something went wrong</Text>
+          <Text style={styles.errorText}>
+            {isNetworkError(error) ? 'Check your connection' : 'Something went wrong'}
+          </Text>
           <TouchableOpacity style={styles.retryButton} onPress={refetch}>
             <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
@@ -217,5 +230,10 @@ const styles = StyleSheet.create({
   gridImage: {
     width: '100%',
     height: '100%',
+  },
+  gridImagePlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.border,
   },
 });

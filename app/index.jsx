@@ -1,25 +1,53 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
+import { colors } from '../constants/theme';
 
 export default function IndexScreen() {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const [profileLoading, setProfileLoading] = useState(false);
 
   useEffect(() => {
-    if (loading) return;
+    if (authLoading) return;
     if (!user) {
       router.replace('/sign-up');
-    } else {
-      router.replace('/(tabs)/discover');
+      return;
     }
-  }, [user, loading]);
+    let cancelled = false;
+    (async () => {
+      setProfileLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('has_onboarded')
+          .eq('id', user.id)
+          .maybeSingle();
+        if (error) throw error;
+        if (cancelled) return;
+        const hasOnboarded = data?.has_onboarded === true;
+        if (hasOnboarded) {
+          router.replace('/(tabs)/discover');
+        } else {
+          router.replace('/onboarding');
+        }
+      } catch (_) {
+        if (!cancelled) router.replace('/onboarding');
+      } finally {
+        if (!cancelled) setProfileLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, authLoading]);
 
-  if (loading) {
+  if (authLoading || (user && profileLoading)) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#0a0a0a" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -31,6 +59,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
 });

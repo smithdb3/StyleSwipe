@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { Image, StyleSheet, Dimensions } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Image, Text, StyleSheet, Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -17,6 +17,7 @@ const VELOCITY_THRESHOLD = 400;
 const SPRING_CONFIG = { damping: 15, stiffness: 150 };
 
 export function SwipeCard({ item, onSwipe, enabled = true }) {
+  const [imageError, setImageError] = useState(false);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const rotation = useSharedValue(0);
@@ -66,11 +67,18 @@ export function SwipeCard({ item, onSwipe, enabled = true }) {
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[styles.card, animatedStyle]}>
-        <Image
-          source={{ uri: item.image_url }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+        {imageError ? (
+          <View style={styles.placeholder}>
+            <Text style={styles.placeholderText}>Image unavailable</Text>
+          </View>
+        ) : (
+          <Image
+            source={{ uri: item.image_url }}
+            style={styles.image}
+            resizeMode="cover"
+            onError={() => setImageError(true)}
+          />
+        )}
       </Animated.View>
     </GestureDetector>
   );
@@ -87,6 +95,17 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  placeholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#e5e5e5',
+  },
+  placeholderText: {
+    fontSize: 14,
+    color: '#737373',
   },
 });
 

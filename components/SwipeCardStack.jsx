@@ -15,6 +15,7 @@ const EXIT_DURATION = 200;
 const ROTATION_MAX = 15;
 
 function ExitingCard({ item, direction, onComplete, startTranslateX = 0, startTranslateY = 0, startRotation = 0 }) {
+  const [imageError, setImageError] = useState(false);
   const translateX = useSharedValue(startTranslateX);
   const translateY = useSharedValue(startTranslateY);
   const rotation = useSharedValue(startRotation);
@@ -44,11 +45,16 @@ function ExitingCard({ item, direction, onComplete, startTranslateX = 0, startTr
 
   return (
     <Animated.View style={[styles.exitingCard, animatedStyle]} pointerEvents="none">
-      <Image
-        source={{ uri: item.image_url }}
-        style={styles.exitingCardImage}
-        resizeMode="cover"
-      />
+      {imageError ? (
+        <View style={styles.exitingPlaceholder} />
+      ) : (
+        <Image
+          source={{ uri: item.image_url }}
+          style={styles.exitingCardImage}
+          resizeMode="cover"
+          onError={() => setImageError(true)}
+        />
+      )}
     </Animated.View>
   );
 }
@@ -192,6 +198,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 12,
+  },
+  exitingPlaceholder: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
+    backgroundColor: colors.border,
   },
   empty: {
     width: CARD_WIDTH,

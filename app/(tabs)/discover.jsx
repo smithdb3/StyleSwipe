@@ -11,6 +11,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useSwipeFeed } from '../../hooks/useSwipeFeed';
 import { SwipeCardStack } from '../../components/SwipeCardStack';
 import { spacing, colors, typography, radii, minTouchTarget } from '../../constants/theme';
+import { isNetworkError } from '../../lib/errorUtils';
 
 /**
  * Discover screen — full-screen swipe feed (Phase 8).
@@ -41,7 +42,9 @@ export default function DiscoverScreen() {
           </View>
         ) : error ? (
           <View style={styles.centered}>
-            <Text style={styles.errorText}>Something went wrong</Text>
+            <Text style={styles.errorText}>
+              {isNetworkError(error) ? 'Check your connection' : 'Something went wrong'}
+            </Text>
             <TouchableOpacity style={styles.retryButton} onPress={() => fetchMore(20)}>
               <Text style={styles.retryButtonText}>Retry</Text>
             </TouchableOpacity>

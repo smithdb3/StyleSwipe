@@ -15,11 +15,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRecommendations } from '../../hooks/useRecommendations';
 import { spacing, colors, typography, radii, minTouchTarget } from '../../constants/theme';
+import { isNetworkError } from '../../lib/errorUtils';
 
 const NUM_COLUMNS = 2;
 const IMAGE_ASPECT = 5 / 4; // height : width = 5 : 4
 
 function ProductCard({ product, itemWidth, onBuyNow }) {
+  const [imageError, setImageError] = useState(false);
   const imageHeight = itemWidth * IMAGE_ASPECT;
   if (!product) return null;
   const raw = product.price;
@@ -32,11 +34,17 @@ function ProductCard({ product, itemWidth, onBuyNow }) {
 
   return (
     <View style={[styles.card, { width: itemWidth }]}>
-      <Image
-        source={{ uri: product.image_url }}
-        style={[styles.cardImage, { height: imageHeight }]}
-        resizeMode="cover"
-      />
+      {imageError ? (
+        <View style={[styles.cardImagePlaceholder, { height: imageHeight }]} />
+      ) : (
+        <Image
+          source={{ uri: product.image_url }}
+          style={[styles.cardImage, { height: imageHeight }]}
+          resizeMode="cover"
+          onError={() => setImageError(true)}
+        />
+      )}
+
       <View style={styles.cardInfo}>
         {product.brand ? (
           <Text style={styles.brand} numberOfLines={1}>
@@ -108,7 +116,9 @@ export default function RecommendationsScreen() {
     return (
       <View style={[styles.container, padding]}>
         <View style={styles.centered}>
-          <Text style={styles.errorText}>Something went wrong</Text>
+          <Text style={styles.errorText}>
+            {isNetworkError(error) ? 'Check your connection' : 'Something went wrong'}
+          </Text>
           <TouchableOpacity style={styles.retryButton} onPress={refetch}>
             <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
@@ -201,6 +211,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cardImage: {
+    width: '100%',
+    backgroundColor: colors.border,
+  },
+  cardImagePlaceholder: {
     width: '100%',
     backgroundColor: colors.border,
   },

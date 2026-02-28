@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'expo-router';
 import { supabase } from '../lib/supabase';
+import { throwWithStatus } from '../lib/errorUtils';
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 
@@ -19,6 +21,7 @@ async function fetchRecommendations(accessToken, userId, limit = 20) {
       const data = JSON.parse(body);
       if (data.message) message = data.message;
     } catch (_) {}
+    if (res.status === 401) throwWithStatus(401, message);
     throw new Error(message);
   }
   const data = await res.json();
@@ -31,6 +34,7 @@ async function fetchRecommendations(accessToken, userId, limit = 20) {
  * Returns { items, loading, error, refetch }.
  */
 export function useRecommendations(userId, limit = 20) {
+  const router = useRouter();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -49,7 +53,13 @@ export function useRecommendations(userId, limit = 20) {
       const fetched = await fetchRecommendations(token, userId, limit);
       setItems(fetched);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const err = e instanceof Error ? e : new Error(String(e));
+      if (err.status === 401) {
+        await supabase.auth.signOut();
+        router.replace('/sign-up');
+        return;
+      }
+      setError(err);
     } finally {
       setLoading(false);
     }
