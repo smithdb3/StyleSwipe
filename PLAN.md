@@ -839,7 +839,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 11.3 — Theme toggle (optional)
 
-- [ ] 
+- [x] 
 
 1. Add toggle for light/dark mode
 2. Store preference in AsyncStorage or profile
