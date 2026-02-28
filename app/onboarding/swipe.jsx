@@ -11,33 +11,20 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSwipeFeed } from '../../hooks/useSwipeFeed';
 import { SwipeCardStack } from '../../components/SwipeCardStack';
-import { supabase } from '../../lib/supabase';
 import { spacing, colors, typography, radii, minTouchTarget } from '../../constants/theme';
 
-export default function StylePickerScreen() {
+export default function OnboardingSwipeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
-  const { queue, loading, error, submitSwipe, fetchMore } = useSwipeFeed(user?.id, 20);
-  const [doneLoading, setDoneLoading] = useState(false);
-  const [doneError, setDoneError] = useState(null);
+  const { queue, loading, error, submitSwipe } = useSwipeFeed(user?.id, 20);
 
-  const handleDone = async () => {
-    if (!user?.id) return;
-    setDoneError(null);
-    setDoneLoading(true);
-    try {
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ has_onboarded: true })
-        .eq('id', user.id);
-      if (updateError) throw updateError;
-      router.replace('/(tabs)/discover');
-    } catch (err) {
-      setDoneError(err.message || 'Something went wrong');
-    } finally {
-      setDoneLoading(false);
-    }
+  const handleSwipe = async (itemId, direction) => {
+    await submitSwipe(itemId, direction);
+  };
+
+  const handleDone = () => {
+    router.replace('/onboarding/done');
   };
 
   const padding = {
@@ -52,10 +39,12 @@ export default function StylePickerScreen() {
 
   return (
     <View style={[styles.container, padding]}>
-      <Text style={styles.title}>Swipe on looks you like</Text>
-      <Text style={styles.subtitle}>
-        Your choices help us personalize your feed. You can always swipe more later.
-      </Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Discover your style</Text>
+        <Text style={styles.subtitle}>
+          Swipe on looks you love. We'll learn your taste.
+        </Text>
+      </View>
 
       <View style={styles.stackWrap}>
         {loading && queue.length === 0 ? (
@@ -66,43 +55,32 @@ export default function StylePickerScreen() {
         ) : error ? (
           <View style={styles.centered}>
             <Text style={styles.errorText}>{error.message}</Text>
-            <TouchableOpacity style={styles.retryButton} onPress={() => fetchMore(20)}>
+            <TouchableOpacity style={styles.retryButton} onPress={() => {}}>
               <Text style={styles.retryButtonText}>Retry</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <SwipeCardStack
             items={queue}
-            onSwipe={submitSwipe}
+            onSwipe={handleSwipe}
             renderEmpty={() => (
               <View style={styles.emptyWrap}>
-                <Text style={styles.emptyTitle}>No more for now</Text>
-                <Text style={styles.emptySubtitle}>Tap Done below to continue</Text>
+                <Text style={styles.emptyTitle}>All done swiping!</Text>
               </View>
             )}
           />
         )}
       </View>
 
-      <View style={styles.footer}>
-        {doneError ? (
-          <Text style={styles.doneError}>{doneError}</Text>
-        ) : null}
-        <TouchableOpacity
-          style={[styles.doneButton, doneLoading && styles.doneButtonDisabled]}
-          onPress={handleDone}
-          disabled={doneLoading}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityLabel="Done"
-        >
-          {doneLoading ? (
-            <ActivityIndicator color={colors.primaryForeground} size="small" />
-          ) : (
-            <Text style={styles.doneButtonText}>Done</Text>
-          )}
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={styles.doneButton}
+        onPress={handleDone}
+        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Done"
+      >
+        <Text style={styles.doneButtonText}>Done</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -111,6 +89,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    justifyContent: 'space-between',
+  },
+  header: {
+    marginBottom: spacing.xl,
   },
   title: {
     ...typography.title,
@@ -121,7 +103,6 @@ const styles = StyleSheet.create({
   subtitle: {
     ...typography.subtitle,
     color: colors.textSecondary,
-    marginBottom: spacing.xl,
     textAlign: 'center',
   },
   stackWrap: {
@@ -165,19 +146,6 @@ const styles = StyleSheet.create({
     ...typography.title,
     fontSize: 22,
     color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    ...typography.subtitle,
-    color: colors.textSecondary,
-  },
-  footer: {
-    marginTop: spacing.xl,
-  },
-  doneError: {
-    ...typography.caption,
-    color: colors.error,
-    marginBottom: spacing.sm,
   },
   doneButton: {
     backgroundColor: colors.primary,
@@ -186,9 +154,6 @@ const styles = StyleSheet.create({
     minHeight: minTouchTarget,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  doneButtonDisabled: {
-    opacity: 0.6,
   },
   doneButtonText: {
     ...typography.button,

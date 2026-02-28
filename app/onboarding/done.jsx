@@ -6,14 +6,27 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { spacing, colors, typography, radii, minTouchTarget } from '../../constants/theme';
 
-export default function WelcomeScreen() {
+export default function DoneScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  const handleGetStarted = () => {
-    router.push('/onboarding/gender');
+  const handleStart = async () => {
+    if (!user?.id) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ has_onboarded: true })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      router.replace('/(tabs)/discover');
+    } catch (err) {
+      console.error('Complete onboarding failed:', err);
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,25 +49,25 @@ export default function WelcomeScreen() {
           />
         </View>
 
-        <Text style={styles.title}>Learn your style by swiping</Text>
+        <Text style={styles.title}>You're all set!</Text>
         <Text style={styles.subtitle}>
-          Swipe on looks you love and we'll recommend products that match your taste.
+          We've learned your style. Now let's find you amazing pieces.
         </Text>
       </View>
 
       <View style={styles.actions}>
         <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={handleGetStarted}
+          style={[styles.primaryButton, loading && styles.buttonDisabled]}
+          onPress={handleStart}
           disabled={loading}
           activeOpacity={0.8}
           accessibilityRole="button"
-          accessibilityLabel="Get Started"
+          accessibilityLabel="Start finding my style"
         >
           {loading ? (
-            <ActivityIndicator size="small" color={colors.primaryForeground} />
+            <ActivityIndicator color={colors.primaryForeground} />
           ) : (
-            <Text style={styles.primaryButtonText}>Get Started</Text>
+            <Text style={styles.primaryButtonText}>Start finding my style</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -102,6 +115,9 @@ const styles = StyleSheet.create({
     minHeight: minTouchTarget,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
   primaryButtonText: {
     ...typography.button,
