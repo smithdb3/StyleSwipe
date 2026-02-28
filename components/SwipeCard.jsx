@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { View, Image, Text, StyleSheet, Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -15,24 +15,46 @@ const CARD_HEIGHT = (CARD_WIDTH * 5) / 4; // 4:5 aspect
 const ROTATION_MAX = 15;
 const VELOCITY_THRESHOLD = 400;
 const SPRING_CONFIG = { damping: 15, stiffness: 150 };
+const EXIT_DURATION = 200;
 
-export function SwipeCard({ item, onSwipe, enabled = true }) {
+export function SwipeCard({
+  item,
+  onSwipe,
+  enabled = true,
+  isExiting = false,
+  exitDirection = null,
+  onSwipeStart,
+  onExitComplete,
+}) {
   const [imageError, setImageError] = useState(false);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const rotation = useSharedValue(0);
   const hasFiredRef = useRef(false);
 
-  const triggerSwipe = (direction, startX, startY, startRotation) => {
+  // When not exiting: on release with velocity, tell stack to start exit (do not submit yet)
+  const triggerSwipeStart = (direction, startX, startY, startRotation) => {
     if (hasFiredRef.current) return;
-    if (onSwipe && item?.id) {
-      hasFiredRef.current = true;
-      onSwipe(item.id, direction, startX, startY, startRotation);
+    hasFiredRef.current = true;
+    if (onSwipeStart && item?.id) {
+      onSwipeStart(item.id, direction, startX, startY, startRotation);
     }
   };
 
+  // Exit animation: run when isExiting becomes true; same card animates off, then onExitComplete
+  useEffect(() => {
+    if (!isExiting || !exitDirection || !item?.id || !onExitComplete) return;
+    const toX = exitDirection === 'like' ? SCREEN_WIDTH * 1.2 : -SCREEN_WIDTH * 1.2;
+    const toRotation = exitDirection === 'like' ? ROTATION_MAX : -ROTATION_MAX;
+    translateX.value = withTiming(toX, { duration: EXIT_DURATION }, () => {
+      runOnJS(onExitComplete)(item.id, exitDirection);
+    });
+    translateY.value = withTiming(0, { duration: EXIT_DURATION });
+    rotation.value = withTiming(toRotation, { duration: EXIT_DURATION });
+  }, [isExiting, exitDirection]);
+
   const panGesture = Gesture.Pan()
-    .enabled(enabled)
+    .enabled(enabled && !isExiting)
     .onUpdate((e) => {
       translateX.value = e.translationX;
       translateY.value = e.translationY * 0.3;
@@ -44,9 +66,9 @@ export function SwipeCard({ item, onSwipe, enabled = true }) {
       const startY = e.translationY * 0.3;
       const startRotation = (startX / (CARD_WIDTH / 2)) * ROTATION_MAX;
       if (vx > VELOCITY_THRESHOLD) {
-        runOnJS(triggerSwipe)('like', startX, startY, startRotation);
+        runOnJS(triggerSwipeStart)('like', startX, startY, startRotation);
       } else if (vx < -VELOCITY_THRESHOLD) {
-        runOnJS(triggerSwipe)('skip', startX, startY, startRotation);
+        runOnJS(triggerSwipeStart)('skip', startX, startY, startRotation);
       } else {
         translateX.value = withSpring(0, SPRING_CONFIG);
         translateY.value = withSpring(0, SPRING_CONFIG);

@@ -1,101 +1,68 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  runOnJS,
-} from 'react-native-reanimated';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { SwipeCard, CARD_DIMENSIONS } from './SwipeCard';
 import { colors, typography } from '../constants/theme';
 
 const { width: CARD_WIDTH, height: CARD_HEIGHT } = CARD_DIMENSIONS;
-const EXIT_DURATION = 200;
 
-const ROTATION_MAX = 15;
-
-function ExitingCard({ item, direction, onComplete, startTranslateX = 0, startTranslateY = 0, startRotation = 0 }) {
+/**
+ * Back card: shows the next item's image when we're in "exiting" state.
+ * Only rendered when exitingItemId is set and visible[1] exists.
+ */
+function BackCardWithImage({ item }) {
   const [imageError, setImageError] = useState(false);
-  const translateX = useSharedValue(startTranslateX);
-  const translateY = useSharedValue(startTranslateY);
-  const rotation = useSharedValue(startRotation);
-  const SCREEN_WIDTH = Dimensions.get('window').width;
-  const itemId = item?.id;
-  const complete = () => onComplete(itemId, direction);
-
-  useEffect(() => {
-    const toX = direction === 'like' ? SCREEN_WIDTH * 1.2 : -SCREEN_WIDTH * 1.2;
-    const toRotation = direction === 'like' ? ROTATION_MAX : -ROTATION_MAX;
-    translateX.value = withTiming(toX, { duration: EXIT_DURATION }, () => {
-      runOnJS(complete)();
-    });
-    translateY.value = withTiming(0, { duration: EXIT_DURATION });
-    rotation.value = withTiming(toRotation, { duration: EXIT_DURATION });
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { rotate: `${rotation.value}deg` },
-    ],
-  }));
-
   if (!item?.image_url) return null;
-
   return (
-    <Animated.View style={[styles.exitingCard, animatedStyle]} pointerEvents="none">
+    <View style={styles.backCard}>
       {imageError ? (
-        <View style={styles.exitingPlaceholder} />
+        <View style={styles.backCardPlaceholder} />
       ) : (
         <Image
           source={{ uri: item.image_url }}
-          style={styles.exitingCardImage}
+          style={styles.backCardImage}
           resizeMode="cover"
           onError={() => setImageError(true)}
         />
       )}
-    </Animated.View>
+    </View>
   );
 }
 
 export function SwipeCardStack({ items, onSwipe, renderEmpty }) {
-  const [exitingCard, setExitingCard] = useState(null);
+  const [exitingItemId, setExitingItemId] = useState(null);
+  const [exitDirection, setExitDirection] = useState(null);
 
   const visible = items.slice(0, 3);
-  const displayTop = exitingCard ? visible[1] : visible[0];
-  const displayRest = exitingCard ? visible.slice(2, 4) : visible.slice(1, 3);
+  const displayTop = visible[0]; // Always first item until parent removes it
+  const nextItem = visible[1];
 
-  const handleSwipeFromCard = useCallback(
-    (itemId, direction, startTranslateX = 0, startTranslateY = 0, startRotation = 0) => {
-      const cardItem = visible.find((i) => i.id === itemId) || displayTop;
-      if (!cardItem) return;
-      setExitingCard({
-        item: cardItem,
-        direction,
-        startTranslateX,
-        startTranslateY,
-        startRotation,
-      });
-    },
-    [visible, displayTop]
-  );
+  // Prefetch next card's image so it's ready when we reveal it
+  useEffect(() => {
+    if (nextItem?.image_url) {
+      Image.prefetch(nextItem.image_url).catch(() => {});
+    }
+  }, [nextItem?.image_url]);
 
-  const handleExitingComplete = useCallback(
+  const handleSwipeStart = useCallback((itemId, direction) => {
+    setExitingItemId(itemId);
+    setExitDirection(direction);
+  }, []);
+
+  const handleExitComplete = useCallback(
     (itemId, direction) => {
       onSwipe(itemId, direction);
-      // Don't clear exitingCard here — wait until parent removes the item so we never re-show it
     },
     [onSwipe]
   );
 
-  // Clear exiting overlay only after the item is no longer in the list (parent has updated)
+  // Clear exiting state only after parent has removed the item from the list
   useEffect(() => {
-    if (!exitingCard) return;
-    if (!items.some((i) => i.id === exitingCard.item?.id)) {
-      setExitingCard(null);
+    if (!exitingItemId) return;
+    if (!items.some((i) => i.id === exitingItemId)) {
+      setExitingItemId(null);
+      setExitDirection(null);
     }
-  }, [exitingCard, items]);
+  }, [exitingItemId, items]);
 
   if (items.length === 0) {
     if (renderEmpty) return renderEmpty();
@@ -108,36 +75,34 @@ export function SwipeCardStack({ items, onSwipe, renderEmpty }) {
 
   return (
     <View style={styles.container}>
-      {/* Back cards - stacked directly on top of each other (no offset) */}
-      {displayTop ? displayRest.map((item, index) => (
-        <View
-          key={`back-${index}-${item.id}`}
-          style={[styles.backCard, { zIndex: 2 - index }]}
-        >
-          <View style={styles.cardPlaceholder} />
+      {/* When exiting: show next card with image behind the sliding top card */}
+      {exitingItemId && nextItem ? (
+        <View style={styles.backCardWrap}>
+          <BackCardWithImage item={nextItem} />
         </View>
-      )) : null}
-      {/* Top card (interactive) - key forces remount when top changes; hide when only exiting card left */}
+      ) : null}
+      {/* Optional: gray placeholders when not exiting (behind top card) */}
+      {!exitingItemId && visible.length > 1 ? (
+        visible.slice(1, 3).map((item, index) => (
+          <View
+            key={`back-${index}-${item.id}`}
+            style={[styles.backCard, styles.backCardPlaceholderOnly, { zIndex: 2 - index }]}
+          >
+            <View style={styles.cardPlaceholder} />
+          </View>
+        ))
+      ) : null}
+      {/* Top card (always visible[0]); same instance animates off when isExiting */}
       {displayTop ? (
         <View style={styles.topCard}>
           <SwipeCard
             key={displayTop.id}
             item={displayTop}
-            onSwipe={handleSwipeFromCard}
-            enabled={true}
-          />
-        </View>
-      ) : null}
-      {/* Exiting card overlay - animates off while next card is already swipeable */}
-      {exitingCard ? (
-        <View style={styles.exitingOverlay} pointerEvents="none">
-          <ExitingCard
-            item={exitingCard.item}
-            direction={exitingCard.direction}
-            onComplete={handleExitingComplete}
-            startTranslateX={exitingCard.startTranslateX}
-            startTranslateY={exitingCard.startTranslateY}
-            startRotation={exitingCard.startRotation}
+            enabled={!exitingItemId}
+            isExiting={exitingItemId === displayTop.id}
+            exitDirection={exitingItemId === displayTop.id ? exitDirection : null}
+            onSwipeStart={handleSwipeStart}
+            onExitComplete={handleExitComplete}
           />
         </View>
       ) : null}
@@ -156,54 +121,38 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 3,
   },
-  backCard: {
+  backCardWrap: {
     position: 'absolute',
+    top: 0,
+    zIndex: 1,
+  },
+  backCard: {
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
-    top: 0,
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#f0f0f0',
+  },
+  backCardPlaceholderOnly: {
+    position: 'absolute',
+    top: 0,
   },
   backCardImage: {
     width: '100%',
     height: '100%',
     borderRadius: 12,
   },
+  backCardPlaceholder: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
+    backgroundColor: colors.border,
+  },
   cardPlaceholder: {
     width: '100%',
     height: '100%',
     borderRadius: 12,
     backgroundColor: '#e8e8e8',
-  },
-  exitingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
-    zIndex: 10,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  exitingCard: {
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: '#f0f0f0',
-  },
-  exitingCardImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 12,
-  },
-  exitingPlaceholder: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 12,
-    backgroundColor: colors.border,
   },
   empty: {
     width: CARD_WIDTH,
