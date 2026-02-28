@@ -9,6 +9,7 @@ import {
   Platform,
   ActivityIndicator,
   ScrollView,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -70,6 +71,14 @@ export default function SignUpScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.form}>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../../assets/logo_cropped.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
+
           <Text style={styles.title}>Create account</Text>
           <Text style={styles.subtitle}>
             Sign up to get started with StyleSwipe
@@ -167,15 +176,25 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     alignSelf: 'center',
   },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: spacing.xxl,
+  },
+  logo: {
+    width: 125,
+    height: 125,
+  },
   title: {
     ...typography.title,
     color: colors.text,
     marginBottom: spacing.sm,
+    textAlign: 'center',
   },
   subtitle: {
     ...typography.subtitle,
     color: colors.textSecondary,
     marginBottom: spacing.xxl,
+    textAlign: 'center',
   },
   label: {
     ...typography.label,
@@ -194,6 +213,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: colors.surface,
     color: colors.text,
+    minHeight: minTouchTarget,
   },
   errorWrap: {
     marginTop: spacing.md,
