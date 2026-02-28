@@ -2,15 +2,13 @@
 
 This document is the single source of truth for both **what** we're building and **how** we're building it. It merges product vision with technical architecture. [requirements.md](requirements.md) remains the product and feature checklist; here we focus on strategy, architecture, and implementation shape.
 
-**Alignment note:** This document merges two earlier designs. We use **Supabase** as the backend (auth, database, Edge Functions). Product catalog is **Shopify Catalog API** and/or a curated dataset ingested into Supabase. Personalization is **heuristic tag-based scoring** (no ML in MVP), implemented in Supabase Edge Functions so the same logic runs for all clients. User data and swipes live in Supabase; optional client cache for performance or offline.
-
 ---
 
 ## 1. Vision and goals
 
-**StyleSwipe is a personal AI stylist in your pocket.** Users discover their authentic style through intuitive swiping. The app learns their taste in real time and surfaces personalized product recommendations from real brands they'll actually love — not trending or one-size-fits-all.
+**StyleSwipe is a personal AI stylist in your pocket.** Users discover their authentic style through intuitive swiping on outfit and look inspiration. The app learns their taste in real time. On a **separate Recommendations page**, users see purchasable clothes from real brands that match their style — similar aesthetic, not the exact items they swiped on. They don't buy from the swipe images; they buy from the recommendations.
 
-**Core metaphor:** Tinder for fashion — swipe right to love it, left to skip it. Every swipe teaches the system a little more about you.
+**Core metaphor:** Tinder for fashion — swipe right to love it, left to skip it. Every swipe teaches the system a little more about you. When you're ready to shop, the Recommendations page shows clothes that look like what you loved.
 
 **Goals of this doc:** Define architecture (mobile + Supabase + content), tech stack, data model, content pipeline, how the AI works, core flows, screens, Supabase usage, user journeys, success metrics, constraints, roadmap, and what we're not building yet — so the team can build without guessing.
 
@@ -52,9 +50,9 @@ This document is the single source of truth for both **what** we're building and
 
 The system has three pillars. **We use Supabase as the backend; client-only persistence is not the primary store.**
 
-1. **Mobile app** — React Native (Expo) client: swipe UI, onboarding, My Style, profile. Optional local cache (e.g. React Query, AsyncStorage) for fast load or offline.
-2. **Supabase** — Auth, Postgres database, and Edge Functions for feed ranking, swipe submission, and My Style. Source of truth for users, profiles, swipes, and (optionally) ingested items.
-3. **Content pipeline** — Shopify Catalog API (primary) and/or a curated dataset. Products are served via Supabase (Edge Function proxies Shopify or reads from `items` table). App never talks to Shopify or the dataset directly for feed; it calls Supabase.
+1. **Mobile app** — React Native (Expo) client: swipe UI (inspiration feed), onboarding, My Style (saved inspiration), **Recommendations** (shoppable products), profile. Optional local cache (e.g. React Query, AsyncStorage) for fast load or offline.
+2. **Supabase** — Auth, Postgres database, and Edge Functions for swipe feed, swipe submission, My Style, and **Recommendations** (ranked shoppable products). Source of truth for users, profiles, swipes, inspiration content, and product catalog.
+3. **Content pipeline** — Two streams: (a) **Swipe feed** = inspiration/outfit images (curated dataset or editorial content) for learning taste only; (b) **Recommendations** = purchasable products from Shopify Catalog API and/or ingested catalog, matched by style/tags. App gets both from Supabase; it never talks to external APIs directly.
 
 ```mermaid
 flowchart LR
@@ -76,9 +74,9 @@ flowchart LR
   EF --> DB
 ```
 
-- **App → Supabase:** Auth (login/signup), read/write swipes and profile, request feed and recommendations.
-- **Supabase → Content:** Edge Function fetches or ranks products (from Shopify API or from `items` table after ingestion).
-- **Edge Functions:** Feed (ranked by tag scores), submit swipe (writes swipes + updates profile tag_scores), My Style (liked items), optional Recommendations.
+- **App → Supabase:** Auth (login/signup), read/write swipes and profile, request swipe feed (inspiration), My Style (liked inspiration), and **Recommendations** (shoppable products).
+- **Supabase → Content:** Edge Function serves swipe feed from inspiration content; Recommendations Edge Function ranks purchasable products (from Shopify or `items`) by tag match to user profile.
+- **Edge Functions:** Swipe feed (inspiration items, ranked by tag scores), submit swipe (writes swipes + updates profile tag_scores), My Style (liked inspiration items), **Recommendations** (shoppable products ranked by style match — similar aesthetic, not the same as swipe content).
 
 ---
 
@@ -90,7 +88,7 @@ flowchart LR
 | **Navigation** | Expo Router | File-based routing; fits Expo and keeps navigation declarative. |
 | **State** | React state + context for UI; Supabase for persistence | Profile, swipes, and feed from Supabase. Optional: React Query or SWR for feed/API caching; AsyncStorage for offline or fast load. |
 | **Backend** | **Supabase** | Postgres (profiles, items, swipes); built-in Auth and RLS; Edge Functions for feed, swipe, and recommendation logic. SQL and RLS for multi-tenant data. |
-| **Content** | Shopify Catalog API and/or curated dataset | Primary: Shopify (real products, images, buy links, tags). Option: dataset ingested into `items`. Feed served via Supabase. |
+| **Content** | Two streams: inspiration + products | **Swipe feed:** inspiration/outfit images (curated or editorial) for learning only; no purchase. **Recommendations:** Shopify Catalog API and/or ingested catalog (shoppable products, similar style). Both served via Supabase. |
 | **AI/ML (MVP)** | Heuristic tag scoring in Edge Function | No ML. Tag affinity per user (0.0–1.0); boost on like, penalty on skip; rank by tag match. Implemented in Supabase Edge Function. |
 
 ---
@@ -100,12 +98,14 @@ flowchart LR
 **Supabase tables:**
 
 - **profiles** — Keyed by Supabase Auth user id. Fields: `created_at`, `has_onboarded`, `tag_scores` (JSON: tag → affinity 0.0–1.0), `preferred_styles`, `preferred_colors`, `preferred_categories`. Updated by Edge Function on each swipe and during onboarding.
-- **items** — Id, `image_url` (or storage key), `source` (e.g. "shopify" or dataset name), metadata (brand, price, buy_url, etc.), `tags` (array). Populated from Shopify or ingestion.
-- **swipes** — `user_id`, `item_id`, `direction` (like/skip), `timestamp`. Right swipes drive My Style and feed ranking; all swipes drive tag-score updates.
+- **inspiration_items** (or **items** with type) — Content for the **swipe feed** only. Id, `image_url`, `source`, `tags` (array). No buy link; used for learning taste. Populated from curated/editorial dataset.
+- **products** (or **items** with type = product) — **Shoppable** items for the **Recommendations** page. Id, `image_url`, metadata (brand, price, **buy_url**), `tags`. From Shopify or ingested catalog. Matched to user by tag similarity; similar style, not the same as inspiration.
+- **swipes** — `user_id`, `item_id` (references inspiration_items), `direction` (like/skip), `timestamp`. Right swipes drive My Style and tag-score updates; all swipes drive recommendation ranking (products are matched by profile tags, not by being the same as swiped items).
 
 **Derived:**
-- **Style DNA** — Top N tags (e.g. 5) from `profiles.tag_scores`; shown in My Style.
-- **My Style** — User's right swipes joined to `items` for display (grid, buy link, remove).
+- **Style DNA** — Top N tags (e.g. 5) from `profiles.tag_scores`; shown in My Style and Recommendations.
+- **My Style** — User's right swipes joined to **inspiration** items for display (grid, remove). No purchase here; inspiration only.
+- **Recommendations** — Shoppable products ranked by tag match to user profile (similar style/aesthetic). Shown on dedicated Recommendations page with buy links.
 
 **Conceptual shapes (for readability):**
 
@@ -132,10 +132,15 @@ No full schema DDL in this doc; that can live in the repo or a separate spec.
 
 ## 7. Content pipeline
 
-- **Primary: Shopify Catalog API** — Real products with images, prices, buy links, and rich attributes (color, material, category, occasion). Edge Function calls Shopify (bearer token, cached) and returns products to the app; or we ingest into `items` and serve from Postgres.
-- **Option: Curated dataset** — e.g. DeepFashion or a fixed JSON/CSV. One-time or periodic ingestion into `items` table (and Storage for images if needed). Edge Function then serves feed from `items`.
-- **Serving:** App requests feed from Supabase only. Edge Function returns ordered list of items (and optionally pre-signed URLs). Content source is an implementation detail behind Supabase.
-- **Fallback:** Mock data (e.g. 20 curated products) for demo or when API is unreachable; seamless UX so the user never sees an error.
+**Two streams:**
+
+1. **Swipe feed (inspiration)** — Outfit/look images used only for learning taste. Source: curated dataset (e.g. DeepFashion, editorial content) or fixed JSON/CSV. Stored in `inspiration_items` (or `items` with type). No buy links. Edge Function returns ranked inspiration for the swipe stack. Users do not buy these; they swipe to teach the app their style.
+
+2. **Recommendations (shoppable products)** — Real products with images, prices, buy links, and tags. Source: Shopify Catalog API and/or ingested catalog. Stored in `products` (or `items` with type = product). Edge Function ranks by tag similarity to user profile and returns list for the **Recommendations page**. These are clothes that match the user's aesthetic — similar style, not the exact clothes from the swipe feed.
+
+**Serving:** App requests swipe feed and Recommendations from Supabase only. Swipe feed = inspiration items. Recommendations = products with buy_url. Content sources are implementation details behind Supabase.
+
+**Fallback:** Mock inspiration and mock products for demo or when APIs are unreachable; seamless UX so the user never sees an error.
 
 ---
 
@@ -144,20 +149,20 @@ No full schema DDL in this doc; that can live in the repo or a separate spec.
 Not machine learning — **heuristic tag-based scoring**, implemented **server-side** in a Supabase Edge Function.
 
 **Model:**
-- Each product has tags (color, style, category, material, occasion).
-- Each user has a taste profile = affinity scores for tags (0.0–1.0), stored in `profiles.tag_scores`.
+- Inspiration items (swipe feed) and products (recommendations) both have tags (color, style, category, material, occasion).
+- Each user has a taste profile = affinity scores for tags (0.0–1.0), stored in `profiles.tag_scores`. Learned from swipes on **inspiration**; used to rank both the next inspiration cards and the **shoppable recommendations** (similar style, different items).
 
 **Learning loop (on every swipe):**
 
 ```
 User swipes right (loves it)
-    → Extract product's tags
+    → Extract inspiration item's tags
     → Boost those tags in user's profile (+0.15)
     → Slight decay all other tags (×0.98)
     → Next feed ranked by average tag match
 
 User swipes left (skips it)
-    → Slight penalty to those tags (-0.05)
+    → Slight penalty to that inspiration item's tags (-0.05)
     → Rest of loop same
 ```
 
@@ -166,7 +171,7 @@ User swipes left (skips it)
 - After ~20 swipes: noticeable preference clustering.
 - No cold-start problem: onboarding seeds initial preferences into `tag_scores`.
 
-**Contract:** Edge Function input: `user_id`, `limit`, optional filters. Output: ordered list of items (or item ids). Style DNA = top 5 tags from `profiles.tag_scores`.
+**Contract:** Swipe feed: input `user_id`, `limit` → ordered inspiration items (no buy link). Recommendations: input `user_id`, `limit` → ordered **products** (with buy_url) ranked by tag match — similar style to what they liked, not the same as swipe content. Style DNA = top 5 tags from `profiles.tag_scores`.
 
 **Why this works:** Transparent (user sees top 5 tags in Style DNA), interpretable, extensible. Same logic for all clients because it runs in Supabase.
 
@@ -182,26 +187,28 @@ User Opens App
     ↓
 [Onboarding] Select initial preferences (optional, skip anytime)
     ↓
-[Swipe Screen] See product → Swipe right (love) or left (skip)
+[Swipe Screen] See inspiration (outfit/look) → Swipe right (love) or left (skip)
     ↓
-Edge Function updates tag_scores; next feed more personalized
+Edge Function updates tag_scores; next inspiration feed more personalized
     ↓
-[My Style] Tap to see saved items and Style DNA
+[My Style] Tap to see saved inspiration (what they liked) + Style DNA
     ↓
-[Buy] Tap "Buy Now" → product buy link (e.g. Shopify)
+[Recommendations] Separate page: shoppable products, similar style (not same clothes)
+    ↓
+[Buy] Tap "Buy Now" on a recommendation → product buy link (e.g. Shopify)
 ```
 
 - **Onboarding** — Welcome, Style Picker, Color Picker, Category Picker. Persist to `profiles` in Supabase; seed `tag_scores` if provided. Then navigate to Discover.
-- **Swipe session** — App fetches next N items from feed Edge Function. On each swipe: call submit-swipe Edge Function (writes `swipes` + updates `profiles.tag_scores`); update local queue; prefetch when queue low. Card stack animates smoothly (e.g. card off-screen on swipe). Maintain queue of ~3–50; auto-refresh when &lt; 3 remain.
-- **Feed generation** — Edge Function returns items ranked by user's current tag scores. MVP: heuristic only; later: optional embeddings.
-- **My Style** — Query Supabase for user's right swipes + item details. Grid, Style DNA banner, Buy Now / Remove.
-- **Recommendations** — Same ranking as feed; can be same endpoint with a flag or a dedicated "recommended products" endpoint.
+- **Swipe session** — App fetches next N **inspiration** items from swipe-feed Edge Function (no buy links). On each swipe: call submit-swipe (writes `swipes` + updates `profiles.tag_scores`); update local queue; prefetch when queue low. Card stack animates smoothly. Maintain queue of ~3–50; auto-refresh when &lt; 3 remain. Users do not buy from these images.
+- **Feed generation** — Edge Function returns **inspiration** items (ranked by tag scores) for the swipe stack only.
+- **My Style** — Query Supabase for user's right swipes + inspiration item details. Grid, Style DNA banner, Remove. No purchase on this page; it's a gallery of liked inspiration.
+- **Recommendations** — **Dedicated page.** Edge Function returns **shoppable products** (from Shopify or catalog) ranked by tag match to user profile — similar style and aesthetic, not the exact clothes from the swipe feed. Grid or list with Buy Now. This is where users shop.
 
 ---
 
 ## 10. Screens and navigation
 
-**Pattern:** Tab-based main app (Discover, My Style, Profile). Onboarding = stack shown for first-time users; skip anytime.
+**Pattern:** Tab-based main app (Discover, My Style, **Recommendations**, Profile). Onboarding = stack shown for first-time users; skip anytime.
 
 **Onboarding stack:**
 1. **Welcome** — "Learn your style by swiping"
@@ -211,23 +218,24 @@ Edge Function updates tag_scores; next feed more personalized
 5. → Start swiping
 
 **Main tabs:**
-- **Discover (primary)** — Swipe feed (one card at a time). Product info: brand, title, price, image. Auto-loads more as queue depletes. "My Style" entry (e.g. top right).
-- **My Style** — Saved items grid (e.g. 2 columns). Style DNA banner (top 5 tags). Buy Now / Remove. Empty state if no saves. "Discover" to return to feed.
+- **Discover (primary)** — Swipe feed of **inspiration** images (one card at a time). Outfit/look only; no buy link. Auto-loads more as queue depletes. Entry to My Style and Recommendations (e.g. top nav).
+- **My Style** — Saved inspiration grid (what they swiped right on). Style DNA banner (top 5 tags). Remove only; no purchase. Empty state if no saves.
+- **Recommendations** — **Separate page.** Grid or list of **shoppable products** that match their style (similar aesthetic, not the exact clothes they swiped). Each item has image, brand, price, **Buy Now** (e.g. Shopify link). This is where users buy.
 - **Profile** — Account, theme (dark/light), about.
 
-**Navigation:** Expo Router. Routes e.g. `(tabs)/index`, `(tabs)/my-style`, `(tabs)/profile`, `onboarding`.
+**Navigation:** Expo Router. Routes e.g. `(tabs)/index`, `(tabs)/my-style`, `(tabs)/recommendations`, `(tabs)/profile`, `onboarding`.
 
 ---
 
 ## 11. Supabase usage
 
 - **Auth:** Email/password or OTP for MVP. User id from Auth links to `profiles` and `swipes`. Optional: anonymous auth for "try before sign-up," then convert to permanent account.
-- **Data:** Tables `profiles`, `items`, `swipes`. RLS: users read/write only their own profile and swipes; `items` read-only for app users.
+- **Data:** Tables `profiles`, `inspiration_items` (or `items` by type), `products`, `swipes`. RLS: users read/write only their own profile and swipes; inspiration and products read-only for app users.
 - **Edge Functions (API surface):**
-  - **Feed** — In: `user_id`, `limit`. Returns ordered list of items (ranked by tag scores). May call Shopify or read from `items`.
-  - **Submit swipe** — In: `user_id`, `item_id`, `direction`. Writes to `swipes` and updates `profiles.tag_scores`. Out: success/error.
-  - **My Style** — In: `user_id`. Returns user's liked items (right swipes + item details). Out: list of items.
-  - **Recommendations** (optional) — Same as feed with "recommended" semantics; In: `user_id`, `limit`. Out: list of items.
+  - **Swipe feed** — In: `user_id`, `limit`. Returns ordered **inspiration** items (ranked by tag scores). No buy links. For the Discover swipe stack only.
+  - **Submit swipe** — In: `user_id`, `item_id` (inspiration id), `direction`. Writes to `swipes` and updates `profiles.tag_scores`. Out: success/error.
+  - **My Style** — In: `user_id`. Returns user's liked **inspiration** (right swipes + inspiration details). Out: list of inspiration items. No purchase.
+  - **Recommendations** — In: `user_id`, `limit`. Returns ordered **shoppable products** (from Shopify or catalog) ranked by tag match to profile — similar style, not same as swipe content. Out: list of products with buy_url. Powers the dedicated Recommendations page.
 
 Full request/response shapes can live in a separate API spec or in the repo.
 
@@ -238,24 +246,24 @@ Full request/response shapes can live in a separate API spec or in the repo.
 **Happy path (~3 min):**
 1. Open app
 2. Tap "Skip" onboarding (optional)
-3. Swipe 5–10 products (left/right)
-4. Tap "My Style" → See 2–3 saved items
-5. Tap "Buy Now" → Opens product page (e.g. Shopify)
-6. Close app
-7. Reopen later → Profile and swipes in Supabase; continue swiping
+3. Swipe 5–10 inspiration images (left/right)
+4. Tap "My Style" → See 2–3 saved inspiration looks
+5. Tap "Recommendations" → See shoppable products that match their style (similar aesthetic)
+6. Tap "Buy Now" on a recommendation → Opens product page (e.g. Shopify)
+7. Close app; reopen later → Profile and swipes in Supabase; continue swiping
 
 **Power user (~15 min):**
 1. Complete onboarding (select 5+ preferences)
-2. Swipe 50+ products (feed auto-refreshes)
-3. Build collection of 20+ saved items
-4. Observe Style DNA evolve
+2. Swipe 50+ inspiration images (feed auto-refreshes)
+3. Build My Style collection of 20+ saved inspiration looks
+4. Observe Style DNA evolve; browse Recommendations page for similar-style clothes to buy
 5. Share collection (future feature)
 
 **Casual browser:**
 1. Skip onboarding
-2. Swipe 3–4 products
+2. Swipe 3–4 inspiration images
 3. Close app
-4. Return later → Profile and history in Supabase; feed continues from ranking
+4. Return later → Profile and history in Supabase; feed and Recommendations continue from ranking
 
 ---
 
@@ -263,9 +271,9 @@ Full request/response shapes can live in a separate API spec or in the repo.
 
 **Engagement:** Session length 5–10 min; 10–20 swipes per session; 30% return within 7 days.
 
-**Personalization:** Save rate 15–25%; top 5 tags stabilize after ~20 swipes; ranking accuracy (user saves &gt; 30% of top-10 ranked items).
+**Personalization:** Save rate 15–25% (right swipes on inspiration); top 5 tags stabilize after ~20 swipes; recommendation ranking accuracy (user engages with &gt; 30% of top-10 recommended products).
 
-**Commerce (nice-to-have):** Click-through to buy page 20% of saved items; brand distribution (no single brand &gt; 40% of saves); price range spread.
+**Commerce (nice-to-have):** Click-through from **Recommendations page** to buy page 20% of shown items; brand distribution (no single brand &gt; 40%); price range spread.
 
 ---
 
@@ -304,6 +312,6 @@ Full request/response shapes can live in a separate API spec or in the repo.
 
 ## 17. Summary
 
-StyleSwipe is a Supabase-backed mobile app (React Native + Expo) that turns fashion discovery into a fun, personalized experience. Users swipe to learn about themselves; heuristic tag-based scoring in Supabase Edge Functions learns from every swipe and serves a ranked feed and Style DNA. Product catalog comes from Shopify Catalog API and/or a curated dataset ingested into Supabase. One doc for both product intent and technical "how."
+StyleSwipe is a Supabase-backed mobile app (React Native + Expo) that turns fashion discovery into a fun, personalized experience. Users swipe on **inspiration** (outfit/look images) to teach the app their taste; they do not buy from those images. A **separate Recommendations page** shows shoppable products (from Shopify or catalog) that match their style — similar aesthetic, not the exact clothes they swiped. Heuristic tag-based scoring in Supabase Edge Functions learns from every swipe and powers both the inspiration feed and the recommendation ranking. One doc for both product intent and technical "how."
 
-**The bet:** Gamification + instant personalization beats generic recommendations.
+**The bet:** Gamification + instant personalization beats generic recommendations. Swipe to learn; Recommendations to shop.
