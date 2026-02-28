@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Image, StyleSheet, Dimensions } from 'react-native';
+import { Image, StyleSheet, Dimensions, Text } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -61,6 +61,14 @@ export function SwipeCard({ item, onSwipe, enabled = true }) {
     ],
   }));
 
+  const likeOpacity = useAnimatedStyle(() => ({
+    opacity: Math.min(Math.max(translateX.value / 80, 0), 1),
+  }));
+
+  const nopeOpacity = useAnimatedStyle(() => ({
+    opacity: Math.min(Math.max(-translateX.value / 80, 0), 1),
+  }));
+
   if (!item?.image_url) return null;
 
   return (
@@ -71,6 +79,12 @@ export function SwipeCard({ item, onSwipe, enabled = true }) {
           style={styles.image}
           resizeMode="cover"
         />
+        <Animated.View style={[styles.likeLabel, likeOpacity]}>
+          <Text style={styles.likeLabelText}>LIKE</Text>
+        </Animated.View>
+        <Animated.View style={[styles.nopeLabel, nopeOpacity]}>
+          <Text style={styles.nopeLabelText}>NOPE</Text>
+        </Animated.View>
       </Animated.View>
     </GestureDetector>
   );
@@ -87,6 +101,38 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  likeLabel: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    borderWidth: 3,
+    borderColor: '#2ecc71',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    transform: [{ rotate: '-15deg' }],
+  },
+  likeLabelText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#2ecc71',
+  },
+  nopeLabel: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    borderWidth: 3,
+    borderColor: '#e74c3c',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    transform: [{ rotate: '15deg' }],
+  },
+  nopeLabelText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#e74c3c',
   },
 });
 
