@@ -1,0 +1,37 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@std/assert@*": "1.0.19",
+    "jsr:@std/internal@^1.0.12": "1.0.12"
+  },
+  "jsr": {
+    "@std/assert@1.0.19": {
+      "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/internal@1.0.12": {
+      "integrity": "972a634fd5bc34b242024402972cd5143eac68d8dffaca5eaa4dba30ce17b027"
+    }
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@supabase/supabase-js@^2.98.0",
+        "npm:@types/react@~19.2.10",
+        "npm:expo-constants@~55.0.7",
+        "npm:expo-linking@~55.0.7",
+        "npm:expo-router@~55.0.3",
+        "npm:expo-status-bar@~55.0.4",
+        "npm:expo@~55.0.4",
+        "npm:react-native-safe-area-context@~5.6.2",
+        "npm:react-native-screens@4.23",
+        "npm:react-native-url-polyfill@2",
+        "npm:react-native@0.83.2",
+        "npm:react@^19.2.0",
+        "npm:typescript@~5.9.2"
+      ]
+    }
+  }
+}
