@@ -1,0 +1,159 @@
+{
+  "description": "Demo clothing images in assets/clothing_demo: filename → buy_url + tags (from filename, normalized to lowLevelDoc §2.1)",
+  "items": [
+    {
+      "id": 1,
+      "filename": "1-grey-streetware.png",
+      "image_path": "assets/clothing_demo/1-grey-streetware.png",
+      "buy_url": "https://www2.hm.com/en_us/productpage.1324090007.html",
+      "tags": ["gray", "streetwear"]
+    },
+    {
+      "id": 2,
+      "filename": "2-tan-modern.png",
+      "image_path": "assets/clothing_demo/2-tan-modern.png",
+      "buy_url": "https://www.vans.com/en-us/p/skate/shoes-5225/skate-loafer-VN000VA6DRT",
+      "tags": ["beige", "modern"]
+    },
+    {
+      "id": 3,
+      "filename": "3-black-streetware.png",
+      "image_path": "assets/clothing_demo/3-black-streetware.png",
+      "buy_url": "https://www.vans.com/en-us/p/shoes/icons/authentic-5310/diamond-check-lx-authentic-44-VN000D9N1OJ",
+      "tags": ["black", "streetwear"]
+    },
+    {
+      "id": 4,
+      "filename": "4-tan-formal.png",
+      "image_path": "assets/clothing_demo/4-tan-formal.png",
+      "buy_url": "https://www.vans.com/en-us/p/shoes/low-top-7100/2-eyelet-boat-shoe-VN000Z11TAN",
+      "tags": ["beige", "formal"]
+    },
+    {
+      "id": 5,
+      "filename": "5-black-casual.png",
+      "image_path": "assets/clothing_demo/5-black-casual.png",
+      "buy_url": "https://www.vans.com/en-us/p/otw-90083/otw-authentic-44-VN00117RBLK",
+      "tags": ["black", "casual"]
+    },
+    {
+      "id": 6,
+      "filename": "6-green-casual.png",
+      "image_path": "assets/clothing_demo/6-green-casual.png",
+      "buy_url": "https://www.vans.com/en-us/p/accessories/hats-5405/vans-jockey-hat-VN000QA1FLX?size=One+Size",
+      "tags": ["green", "casual"]
+    },
+    {
+      "id": 7,
+      "filename": "7grey-streetware.png",
+      "image_path": "assets/clothing_demo/7grey-streetware.png",
+      "buy_url": "https://www2.hm.com/en_us/productpage.1322088003.html",
+      "tags": ["gray", "streetwear"]
+    },
+    {
+      "id": 8,
+      "filename": "8-modern.png",
+      "image_path": "assets/clothing_demo/8-modern.png",
+      "buy_url": "https://www2.hm.com/en_us/productpage.1295737008.html",
+      "tags": ["modern"]
+    },
+    {
+      "id": 9,
+      "filename": "9-grey-streetware.png",
+      "image_path": "assets/clothing_demo/9-grey-streetware.png",
+      "buy_url": "https://us.shein.com/Men-s-Fashionable-Distressed-Loose-Wide-Leg-Jeans-Without-Chain-Belt-p-147652381.html?src_identifier=fc%3DMen%20Clothing%60sc%3DMen%20Clothing%60tc%3D0%60oc%3D0%60ps%3Dtab06navbar06%60jc%3DitemPicking_017172963&src_module=topcat&src_tab_page_id=page_home1772301316609&mallCode=1&pageListType=4&imgRatio=3-4&detailBusinessFrom=0-1_147652381%7C0-2&pageListType=4",
+      "tags": ["gray", "streetwear"]
+    },
+    {
+      "id": 10,
+      "filename": "10-black-casual.png",
+      "image_path": "assets/clothing_demo/10-black-casual.png",
+      "buy_url": "https://us.shein.com/100-Cotton-Funny-Drinking-Humor-You-Might-Be-Drunk-T-Shirt-Women-s-Men-Graphic-Tee-p-68103496.html?src_identifier=fc%3DMen%20Clothing%60sc%3DMen%20Clothing%60tc%3D0%60oc%3D0%60ps%3Dtab06navbar06%60jc%3DitemPicking_017172963&src_module=topcat&src_tab_page_id=page_home1772301316609&mallCode=1&pageListType=4&imgRatio=3-4&detailBusinessFrom=0-1_68103496%7C0-2&pageListType=4",
+      "tags": ["black", "casual"]
+    },
+    {
+      "id": 11,
+      "filename": "11-black-casual.png",
+      "image_path": "assets/clothing_demo/11-black-casual.png",
+      "buy_url": "https://us.shein.com/Men-S-Heavyweight-180gsm-Gaming-T-Shirt-Can-t-Hear-You-I-m-Gaming-Slogan-Headphones-Graphic-Print-Black-With-Red-Yellow-White-Lettering-Casual-Streetwear-Round-Neck-Short-Sleeve-Tee-For-Gamers-All-Season-Comfort-Fit-Gamer-Lifestyle-p-195243966.html?src_identifier=fc%3DMen%20Clothing%60sc%3DMen%20Clothing%60tc%3D0%60oc%3D0%60ps%3Dtab06navbar06%60jc%3DitemPicking_017172963&src_module=topcat&src_tab_page_id=page_home1772301316609&mallCode=1&pageListType=4&imgRatio=3-4&detailBusinessFrom=0-1_195243966%7C0-2&pageListType=4",
+      "tags": ["black", "casual"]
+    },
+    {
+      "id": 12,
+      "filename": "12-white-casual.png",
+      "image_path": "assets/clothing_demo/12-white-casual.png",
+      "buy_url": "https://us.shein.com/I-Am-Not-Old-I-Am-Classic-Graphic-Tee-Streetwear-Retro-Print-Oversized-Tshirt-Mens-Womens-Round-Neck-Cotton-Short-Sleeve-Tops-Best-Birthday-Gift-Tshirt-For-Fashion-Male-Sports-Clothes-p-70121543.html?src_identifier=fc%3DMen%20Clothing%60sc%3DMen%20Clothing%60tc%3D0%60oc%3D0%60ps%3Dtab06navbar06%60jc%3DitemPicking_017172963&src_module=topcat&src_tab_page_id=page_home1772301316609&attr_ids=101_2491&mallCode=1&pageListType=4&imgRatio=3-4&detailBusinessFrom=0-1_70121543%7C0-2&pageListType=4",
+      "tags": ["white", "casual"]
+    },
+    {
+      "id": 13,
+      "filename": "13-black-formal.png",
+      "image_path": "assets/clothing_demo/13-black-formal.png",
+      "buy_url": "https://us.shein.com/Men-s-Casual-Thick-Sole-Slip-On-Solid-Black-Leather-Shoes-Student-Flat-Shoes-Formal-Business-Shoes-Tasseled-Casual-Loafers-Work-Boots-Old-Money-Chic-Autumn-p-144185639.html?src_identifier=fc%3DMen%20Clothing%60sc%3DMen%20Clothing%60tc%3D0%60oc%3D0%60ps%3Dtab06navbar06%60jc%3DitemPicking_017172963&src_module=topcat&src_tab_page_id=page_home1772301316609&mallCode=1&pageListType=4&imgRatio=3-4&detailBusinessFrom=0-1_144185639%7C0-2&pageListType=4",
+      "tags": ["black", "formal"]
+    },
+    {
+      "id": 14,
+      "filename": "14-white-.png",
+      "image_path": "assets/clothing_demo/14-white-.png",
+      "buy_url": "https://us.shein.com/Mens-Linen-Cotton-Casual-Pants-Elastic-Waist-Drawstring-Lightweight-Pants-Loose-Fit-Summer-Beach-Yoga-Trousers-p-224996536.html?src_identifier=fc%3DMen%20Clothing%60sc%3DMen%20Clothing%60tc%3D0%60oc%3D0%60ps%3Dtab06navbar06%60jc%3DitemPicking_017172963&src_module=topcat&src_tab_page_id=page_home1772301316609&mallCode=1&pageListType=4&imgRatio=3-4&detailBusinessFrom=0-1_224996536%7C0-2&pageListType=4",
+      "tags": ["white"]
+    },
+    {
+      "id": 15,
+      "filename": "15-modern.png",
+      "image_path": "assets/clothing_demo/15-modern.png",
+      "buy_url": "https://us.shein.com/Men-s-Vintage-Regular-Fit-Jeans-Also-Available-In-Plus-Size-And-Tall-Fit-p-265614526.html?src_identifier=fc%3DMen%20Clothing%60sc%3DMen%20Clothing%60tc%3D0%60oc%3D0%60ps%3Dtab06navbar06%60jc%3DitemPicking_017172963&src_module=topcat&src_tab_page_id=page_home1772301316609&mallCode=1&pageListType=4&imgRatio=3-4&detailBusinessFrom=0-1_265614526%7C0-2&pageListType=4",
+      "tags": ["modern"]
+    },
+    {
+      "id": 16,
+      "filename": "16-black-casual.png",
+      "image_path": "assets/clothing_demo/16-black-casual.png",
+      "buy_url": "https://www.nike.com/t/tech-mens-fleece-pullover-hoodie-2eYhFKJ7/IO9941-010",
+      "tags": ["black", "casual"]
+    },
+    {
+      "id": 17,
+      "filename": "17-red-streetware.png",
+      "image_path": "assets/clothing_demo/17-red-streetware.png",
+      "buy_url": "https://www.nike.com/t/jordan-mens-oversized-t-shirt-J7L0iRAA/IQ2151-636",
+      "tags": ["red", "streetwear"]
+    },
+    {
+      "id": 18,
+      "filename": "18-black-casual.png",
+      "image_path": "assets/clothing_demo/18-black-casual.png",
+      "buy_url": "https://www.nike.com/t/jordan-sport-hoop-fleece-mens-dri-fit-full-zip-hoodie-1wSKMN/FV8602-010",
+      "tags": ["black", "casual"]
+    },
+    {
+      "id": 19,
+      "filename": "19-modern.png",
+      "image_path": "assets/clothing_demo/19-modern.png",
+      "buy_url": "https://www.hollisterco.com/shop/us/p/at-the-knee-washed-black-denim-painter-shorts-61987856?categoryId=12551&faceout=model&seq=06&afsource=social+proofing&pagefm=navigation-grid&prodvm=navigation-grid",
+      "tags": ["modern"]
+    },
+    {
+      "id": 20,
+      "filename": "20-modern.png",
+      "image_path": "assets/clothing_demo/20-modern.png",
+      "buy_url": "https://www.hollisterco.com/shop/us/p/super-boxy-logo-hoodie-61922319?categoryId=166245&faceout=model&seq=94&pagefm=navigation-grid&prodvm=navigation-grid",
+      "tags": ["modern"]
+    },
+    {
+      "id": 21,
+      "filename": "21-grey-streetware.png",
+      "image_path": "assets/clothing_demo/21-grey-streetware.png",
+      "buy_url": "https://www.hollisterco.com/shop/us/p/boxy-heavyweight-tom-and-jerry-graphic-tee-62224344?categoryId=166245&faceout=model&seq=02&pagefm=navigation-grid&prodvm=navigation-grid",
+      "tags": ["gray", "streetwear"]
+    },
+    {
+      "id": 22,
+      "filename": "22-white-formal.png",
+      "image_path": "assets/clothing_demo/22-white-formal.png",
+      "buy_url": "https://us.shein.com/Manfinity-CasualCool-Men-s-Summer-Solid-Color-Contrast-Lace-Single-Breasted-Casual-Shirt-p-87856516.html?src_identifier=fc%3DMen%20Clothing%60sc%3DMen%20Clothing%60tc%3D0%60oc%3D0%60ps%3Dtab06navbar06%60jc%3DitemPicking_017172963&src_module=topcat&src_tab_page_id=page_home1772301316609&mallCode=1&pageListType=4&imgRatio=3-4&detailBusinessFrom=0-1_87856516%7C0-2&pageListType=4",
+      "tags": ["white", "formal"]
+    }
+  ]
+}
