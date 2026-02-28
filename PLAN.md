@@ -819,7 +819,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 11.1 — Create Profile tab
 
-- [ ] 
+- [x] 
 
 1. Create `app/(tabs)/profile.jsx`
 2. Display: user email (from session), optional avatar
@@ -828,7 +828,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 11.2 — Logout button
 
-- [ ] 
+- [x] 
 
 1. On tap: `supabase.auth.signOut()`
 2. Clear any local caches (feed queue, React Query cache)
