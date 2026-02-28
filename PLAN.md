@@ -172,25 +172,35 @@ npm install @supabase/supabase-js react-native-url-polyfill react-native-gesture
 
 ---
 
-## Phase 2: Database schema
+## Phase 2: Database schema (via migrations)
 
-### Step 2.1 — Open Supabase SQL Editor
+All schema changes live in the codebase as migration files and are applied with `supabase db push`. No manual SQL in the Supabase dashboard.
+
+### Step 2.1 — Install Supabase CLI, init, and link project
 
 - [x] 
 
-1. In Supabase dashboard, click **SQL Editor** (left sidebar)
-2. Click **New query**
-3. **Verify:** You see a blank SQL editor panel
+1. Install CLI: `npm install -g supabase` or `brew install supabase/tap/supabase`
+2. **Verify:** `supabase --version` prints a version number
+3. Run: `supabase init` — creates `supabase/config.toml` and `supabase/migrations/`
+4. **Verify:** `supabase/` directory exists with `migrations/` folder
+5. Run: `supabase login` (opens browser to authenticate)
+6. Run: `supabase link --project-ref YOUR_PROJECT_REF`
+   - Find YOUR_PROJECT_REF in Supabase dashboard URL: `https://app.supabase.com/project/abcdefgh` → ref is `abcdefgh`
+7. **Verify:** `supabase link` succeeds
 
 ---
 
-### Step 2.2 — Create `profiles` table
+### Step 2.2 — Create schema migration file
 
 - [ ] 
 
-1. Paste the following SQL into the editor:
+1. Create a new migration file in `supabase/migrations/` with a timestamp prefix, e.g. `supabase/migrations/20240227000000_initial_schema.sql`
+   - You can run `supabase migration new initial_schema` to generate the filename, or create it manually
+2. Paste the following SQL into the file (schema + indexes + RLS in one migration):
 
 ```sql
+-- Tables
 CREATE TABLE public.profiles (
   id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   created_at timestamptz NOT NULL DEFAULT now(),
@@ -203,21 +213,7 @@ CREATE TABLE public.profiles (
 );
 
 COMMENT ON COLUMN public.profiles.tag_scores IS 'Map of tag string to affinity score in [0, 1]';
-```
 
-2. Click **Run** (or Ctrl+Enter)
-3. **Verify:** Message says "Success. No rows returned"
-4. **Verify:** In **Table Editor**, you see table `profiles` with columns: id, created_at, updated_at, has_onboarded, tag_scores, preferred_styles, preferred_colors, preferred_categories
-
----
-
-### Step 2.3 — Create `inspiration_items` table
-
-- [ ] 
-
-1. In the same or a new query, paste:
-
-```sql
 CREATE TABLE public.inspiration_items (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at timestamptz NOT NULL DEFAULT now(),
@@ -225,20 +221,7 @@ CREATE TABLE public.inspiration_items (
   source text,
   tags text[] NOT NULL DEFAULT '{}'
 );
-```
 
-2. Run the query
-3. **Verify:** Table `inspiration_items` appears in Table Editor with columns: id, created_at, image_url, source, tags
-
----
-
-### Step 2.4 — Create `products` table
-
-- [ ] 
-
-1. Paste:
-
-```sql
 CREATE TABLE public.products (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   external_id text UNIQUE NOT NULL,
@@ -252,20 +235,7 @@ CREATE TABLE public.products (
   tags text[] NOT NULL DEFAULT '{}',
   metadata jsonb DEFAULT '{}'
 );
-```
 
-2. Run
-3. **Verify:** Table `products` exists with all columns listed in lowLevelDoc Section 5.1
-
----
-
-### Step 2.5 — Create `swipe_direction` enum and `swipes` table
-
-- [ ] 
-
-1. Paste:
-
-```sql
 CREATE TYPE swipe_direction AS ENUM ('like', 'skip');
 
 CREATE TABLE public.swipes (
@@ -276,111 +246,50 @@ CREATE TABLE public.swipes (
   created_at timestamptz NOT NULL DEFAULT now(),
   UNIQUE (user_id, item_id)
 );
-```
 
-2. Run
-3. **Verify:** Enum `swipe_direction` exists (check in Database → Types)
-4. **Verify:** Table `swipes` exists with unique constraint on (user_id, item_id)
-
----
-
-### Step 2.6 — Create indexes
-
-- [ ] 
-
-1. Paste:
-
-```sql
+-- Indexes
 CREATE INDEX idx_swipes_user_id ON public.swipes(user_id);
 CREATE INDEX idx_swipes_item_id ON public.swipes(item_id);
 CREATE INDEX idx_swipes_user_item ON public.swipes(user_id, item_id);
-
 CREATE INDEX idx_inspiration_items_tags ON public.inspiration_items USING GIN(tags);
 CREATE INDEX idx_products_tags ON public.products USING GIN(tags);
 CREATE INDEX idx_products_external_id ON public.products(external_id);
-```
 
-2. Run
-3. **Verify:** In Table Editor, open `swipes` and check Indexes tab — you should see idx_swipes_user_id, idx_swipes_item_id, idx_swipes_user_item
-
----
-
-## Phase 3: Row Level Security (RLS)
-
-### Step 3.1 — Enable RLS on `profiles`
-
-- [ ] 
-
-1. In SQL Editor, paste:
-
-```sql
+-- RLS
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "profiles_select_own" ON public.profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "profiles_insert_own" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "profiles_update_own" ON public.profiles FOR UPDATE USING (auth.uid() = id);
-```
 
-2. Run
-3. **Verify:** No error. In Table Editor → profiles → RLS, it should show "RLS enabled" and 3 policies
-
----
-
-### Step 3.2 — Enable RLS on `inspiration_items`
-
-- [ ] 
-
-1. Paste:
-
-```sql
 ALTER TABLE public.inspiration_items ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "inspiration_select" ON public.inspiration_items FOR SELECT TO authenticated USING (true);
-```
 
-2. Run
-3. **Verify:** inspiration_items has RLS enabled and one SELECT policy for authenticated users
-
----
-
-### Step 3.3 — Enable RLS on `products`
-
-- [ ] 
-
-1. Paste:
-
-```sql
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "products_select" ON public.products FOR SELECT TO authenticated USING (true);
-```
 
-2. Run
-3. **Verify:** products has RLS enabled and one SELECT policy
-
----
-
-### Step 3.4 — Enable RLS on `swipes`
-
-- [ ] 
-
-1. Paste:
-
-```sql
 ALTER TABLE public.swipes ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "swipes_select_own" ON public.swipes FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.uid() = user_id);
 ```
 
-2. Run
-3. **Verify:** swipes has RLS enabled and 2 policies (SELECT own, INSERT own)
+3. **Verify:** File is valid SQL; path is `supabase/migrations/YYYYMMDDHHMMSS_descriptive_name.sql`
 
 ---
 
-## Phase 4: Mock data seeding
+### Step 2.3 — Apply migrations to remote database
 
-### Step 4.1 — Create `data` directory and mock files
+- [ ] 
+
+1. From project root, run: `supabase db push`
+2. **Verify:** Output shows migration(s) applied successfully
+3. **Verify:** In Supabase Dashboard → Table Editor, you see: `profiles`, `inspiration_items`, `products`, `swipes`
+4. **Verify:** In Table Editor → profiles → RLS, it shows "RLS enabled" and 3 policies
+
+---
+
+## Phase 3: Mock data seeding
+
+### Step 3.1 — Create `data` directory and mock files
 
 - [ ] 
 
@@ -405,7 +314,7 @@ CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.u
 
 ---
 
-### Step 4.2 — Create `data/mock-products.json`
+### Step 3.2 — Create `data/mock-products.json`
 
 - [ ] 
 
@@ -433,7 +342,7 @@ CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.u
 
 ---
 
-### Step 4.3 — Create seed script
+### Step 3.3 — Create seed script
 
 - [ ] 
 
@@ -466,11 +375,11 @@ seed();
 
 3. Add `dotenv` to devDependencies: `npm install dotenv --save-dev`
 4. Create `.env` entry for `SUPABASE_SERVICE_ROLE_KEY` (from Step 0.5) — only if running seed from Node; otherwise use Supabase Dashboard to insert manually
-5. **Verify:** Script exists; for manual seed, use SQL Editor instead (see Step 4.4)
+5. **Verify:** Script exists; for manual seed, use SQL Editor instead (see Step 3.4)
 
 ---
 
-### Step 4.4 — Insert mock data via Supabase SQL Editor (alternative to script)
+### Step 3.4 — Insert mock data via Supabase SQL Editor (alternative to script)
 
 - [ ] 
 
@@ -487,7 +396,7 @@ INSERT INTO public.inspiration_items (id, image_url, tags, source) VALUES
 
 ---
 
-### Step 4.5 — Insert mock products
+### Step 3.5 — Insert mock products
 
 - [ ] 
 
@@ -506,42 +415,13 @@ INSERT INTO public.products (external_id, title, brand, image_url, price, buy_ur
 
 ## Phase 5: Edge Functions setup
 
-### Step 5.1 — Install Supabase CLI
+**Note:** Supabase CLI, `supabase init`, and `supabase link` are already done in Phase 2.
+
+### Step 5.1 — Create `swipe-feed` Edge Function
 
 - [ ] 
 
-1. Run: `npm install -g supabase` or `brew install supabase/tap/supabase`
-2. **Verify:** `supabase --version` prints a version number
-
----
-
-### Step 5.2 — Initialize Supabase in project (optional for local dev)
-
-- [ ] 
-
-1. Run: `supabase init`
-2. This creates `supabase/config.toml` and `supabase/migrations/`
-3. If you deploy Edge Functions without local Supabase, you can create functions manually in Dashboard or via CLI linked to remote project
-4. **Verify:** `supabase/` directory exists
-
----
-
-### Step 5.3 — Link Supabase project to CLI
-
-- [ ] 
-
-1. Run: `supabase login` (opens browser to authenticate)
-2. Run: `supabase link --project-ref YOUR_PROJECT_REF`
-   - Find YOUR_PROJECT_REF in Supabase dashboard URL: `https://app.supabase.com/project/abcdefgh` → ref is `abcdefgh`
-3. **Verify:** `supabase link` succeeds
-
----
-
-### Step 5.4 — Create `swipe-feed` Edge Function
-
-- [ ] 
-
-1. Run: `supabase functions new swipe-feed`
+1. Run: `supabase functions new swipe-feed` (requires Supabase CLI from Phase 2)
 2. This creates `supabase/functions/swipe-feed/index.ts`
 3. Implement the function using the skeleton from lowLevelDoc Section 7.1
 4. Key logic:
@@ -555,7 +435,7 @@ INSERT INTO public.products (external_id, title, brand, image_url, price, buy_ur
 
 ---
 
-### Step 5.5 — Create shared CORS helper
+### Step 5.2 — Create shared CORS helper
 
 - [ ] 
 
@@ -572,7 +452,7 @@ export const corsHeaders = {
 
 ---
 
-### Step 5.6 — Create `submit-swipe` Edge Function
+### Step 5.3 — Create `submit-swipe` Edge Function
 
 - [ ] 
 
@@ -589,7 +469,7 @@ export const corsHeaders = {
 
 ---
 
-### Step 5.7 — Create `updateTagScores` helper (for Edge Functions)
+### Step 5.4 — Create `updateTagScores` helper (for Edge Functions)
 
 - [ ] 
 
@@ -602,7 +482,7 @@ export const corsHeaders = {
 
 ---
 
-### Step 5.8 — Create `my-style` Edge Function
+### Step 5.5 — Create `my-style` Edge Function
 
 - [ ] 
 
@@ -615,7 +495,7 @@ export const corsHeaders = {
 
 ---
 
-### Step 5.9 — Create `recommendations` Edge Function
+### Step 5.6 — Create `recommendations` Edge Function
 
 - [ ] 
 
@@ -629,7 +509,7 @@ export const corsHeaders = {
 
 ---
 
-### Step 5.10 — Set Edge Function secrets
+### Step 5.7 — Set Edge Function secrets
 
 - [ ] 
 
@@ -641,7 +521,7 @@ export const corsHeaders = {
 
 ---
 
-### Step 5.11 — Deploy Edge Functions
+### Step 5.8 — Deploy Edge Functions
 
 - [ ] 
 
@@ -653,7 +533,7 @@ export const corsHeaders = {
 
 ---
 
-### Step 5.12 — Test swipe-feed with curl
+### Step 5.9 — Test swipe-feed with curl
 
 - [ ] 
 
@@ -1083,6 +963,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 | `app/onboarding/` | Onboarding stack |
 | `hooks/useSwipeFeed.js` | Swipe feed + submit logic |
 | `components/SwipeCard.jsx` | Gesture + animation card |
+| `supabase/migrations/` | Database schema + RLS (versioned) |
 | `supabase/functions/swipe-feed/` | Edge Function |
 | `supabase/functions/submit-swipe/` | Edge Function |
 | `supabase/functions/my-style/` | Edge Function |
