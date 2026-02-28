@@ -435,7 +435,7 @@ INSERT INTO public.products (external_id, title, brand, image_url, price, buy_ur
 
 ### Step 5.1 — Create `swipe-feed` Edge Function
 
-- [ ] 
+- [x] 
 
 1. Run: `supabase functions new swipe-feed` (requires Supabase CLI from Phase 2)
 2. This creates `supabase/functions/swipe-feed/index.ts`
@@ -453,7 +453,7 @@ INSERT INTO public.products (external_id, title, brand, image_url, price, buy_ur
 
 ### Step 5.2 — Create shared CORS helper
 
-- [ ] 
+- [x] 
 
 1. Create `supabase/functions/_shared/cors.ts` (or `cors.js`):
 
