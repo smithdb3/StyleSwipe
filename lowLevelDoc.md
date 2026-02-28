@@ -8,23 +8,6 @@ This document is the **implementation-grade** specification for building StyleSw
 
 ---
 
-## 0. Quick Start (5 min checklist)
-
-**Use this to bootstrap a working demo in the shortest time:**
-
-- [ ] Create Supabase project (`styleswipe-dev`)
-- [ ] Copy/paste schema from section 4.1 into SQL editor
-- [ ] Copy/paste RLS policies from section 7.3
-- [ ] Deploy mock data (section 2.3 JSON) via SQL or seed script
-- [ ] Deploy Edge Function skeleton (sections 6.1–6.4)
-- [ ] Set environment secrets (section 10)
-- [ ] Test: `curl -H "Authorization: Bearer $JWT" https://.../functions/v1/swipe-feed?user_id=YOUR_UUID&limit=5`
-- [ ] Wire client to Edge Functions (section 8 + examples)
-
-**First working feature:** Swipe feed returning 5 inspiration items, no ranking needed yet.
-
----
-
 ## 1. Implementation Sequence
 
 **Follow this order to minimize blockers and build incrementally.**
