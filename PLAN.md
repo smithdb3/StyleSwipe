@@ -539,7 +539,7 @@ export const corsHeaders = {
 
 ### Step 5.8 — Deploy Edge Functions
 
-- [ ] 
+- [x] 
 
 1. Run: `supabase functions deploy swipe-feed`
 2. Run: `supabase functions deploy submit-swipe`
@@ -551,7 +551,7 @@ export const corsHeaders = {
 
 ### Step 5.9 — Test swipe-feed with curl
 
-- [ ] 
+- [x] 
 
 1. Sign up a test user in Supabase Authentication → Users → Add user (or via app)
 2. Copy the user's JWT (from app session or create via API)

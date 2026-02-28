@@ -389,7 +389,7 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 
 [functions.swipe-feed]
 enabled = true
-verify_jwt = true
+verify_jwt = false  # We validate JWT inside the function; gateway ES256 verification can fail
 import_map = "./functions/swipe-feed/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -400,7 +400,7 @@ entrypoint = "./functions/swipe-feed/index.ts"
 
 [functions.submit-swipe]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/submit-swipe/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -411,7 +411,7 @@ entrypoint = "./functions/submit-swipe/index.ts"
 
 [functions.my-style]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/my-style/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -422,7 +422,7 @@ entrypoint = "./functions/my-style/index.ts"
 
 [functions.recommendations]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/recommendations/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
