@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { Image, StyleSheet, Dimensions, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -15,37 +15,82 @@ const CARD_HEIGHT = (CARD_WIDTH * 5) / 4; // 4:5 aspect
 const ROTATION_MAX = 15;
 const VELOCITY_THRESHOLD = 400;
 const SPRING_CONFIG = { damping: 15, stiffness: 150 };
+const EXIT_DURATION = 200;
 
-export function SwipeCard({ item, onSwipe, enabled = true }) {
+function runExitAnimation(translateX, translateY, rotation, direction, onComplete) {
+  'worklet';
+  const toX = direction === 'like' ? SCREEN_WIDTH * 1.2 : -SCREEN_WIDTH * 1.2;
+  const toRotation = direction === 'like' ? ROTATION_MAX : -ROTATION_MAX;
+  translateX.value = withTiming(toX, { duration: EXIT_DURATION }, () => {
+    runOnJS(onComplete)(direction);
+  });
+  translateY.value = withTiming(0, { duration: EXIT_DURATION });
+  rotation.value = withTiming(toRotation, { duration: EXIT_DURATION });
+}
+
+const SwipeCardComponent = forwardRef(function SwipeCard(
+  { item, onSwipe, enabled = true },
+  ref
+) {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const rotation = useSharedValue(0);
+  const isExiting = useSharedValue(0);
   const hasFiredRef = useRef(false);
 
-  const triggerSwipe = (direction, startX, startY, startRotation) => {
-    if (hasFiredRef.current) return;
-    if (onSwipe && item?.id) {
+  const notifySwipeComplete = useCallback(
+    (direction) => {
+      if (onSwipe && item?.id) {
+        onSwipe(item.id, direction);
+      }
+    },
+    [onSwipe, item?.id]
+  );
+
+  const startExit = useCallback(
+    (direction, startX, startY, startRotation) => {
+      if (hasFiredRef.current) return;
       hasFiredRef.current = true;
-      onSwipe(item.id, direction, startX, startY, startRotation);
-    }
-  };
+      isExiting.value = 1;
+      runExitAnimation(translateX, translateY, rotation, direction, notifySwipeComplete);
+    },
+    [translateX, translateY, rotation, isExiting, notifySwipeComplete]
+  );
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      swipe(direction) {
+        if (hasFiredRef.current || !item?.id) return;
+        hasFiredRef.current = true;
+        isExiting.value = 1;
+        translateX.value = 0;
+        translateY.value = 0;
+        rotation.value = 0;
+        runExitAnimation(translateX, translateY, rotation, direction, notifySwipeComplete);
+      },
+    }),
+    [item?.id, translateX, translateY, rotation, isExiting, notifySwipeComplete]
+  );
 
   const panGesture = Gesture.Pan()
     .enabled(enabled)
     .onUpdate((e) => {
+      if (isExiting.value) return;
       translateX.value = e.translationX;
       translateY.value = e.translationY * 0.3;
       rotation.value = (e.translationX / (CARD_WIDTH / 2)) * ROTATION_MAX;
     })
     .onEnd((e) => {
+      if (isExiting.value) return;
       const vx = e.velocityX;
       const startX = e.translationX;
       const startY = e.translationY * 0.3;
       const startRotation = (startX / (CARD_WIDTH / 2)) * ROTATION_MAX;
       if (vx > VELOCITY_THRESHOLD) {
-        runOnJS(triggerSwipe)('like', startX, startY, startRotation);
+        runOnJS(startExit)('like', startX, startY, startRotation);
       } else if (vx < -VELOCITY_THRESHOLD) {
-        runOnJS(triggerSwipe)('skip', startX, startY, startRotation);
+        runOnJS(startExit)('skip', startX, startY, startRotation);
       } else {
         translateX.value = withSpring(0, SPRING_CONFIG);
         translateY.value = withSpring(0, SPRING_CONFIG);
@@ -116,7 +161,51 @@ export function SwipeCard({ item, onSwipe, enabled = true }) {
       </Animated.View>
     </GestureDetector>
   );
+});
+
+/** Presentational card (image + overlay with name, brand, price, tags) for back cards. */
+export function CardContent({ item }) {
+  if (!item?.image_url) return null;
+  return (
+    <View style={styles.card}>
+      <Image
+        source={{ uri: item.image_url }}
+        style={styles.image}
+        resizeMode="cover"
+      />
+      <View style={styles.infoOverlay}>
+        {item.name && (
+          <Text style={styles.itemName} numberOfLines={1}>
+            {item.name}
+          </Text>
+        )}
+        <View style={styles.infoRow}>
+          {item.brand && (
+            <Text style={styles.itemBrand} numberOfLines={1}>
+              {item.brand}
+            </Text>
+          )}
+          {item.price && (
+            <Text style={styles.itemPrice} numberOfLines={1}>
+              {typeof item.price === 'number' ? `$${item.price.toFixed(2)}` : item.price}
+            </Text>
+          )}
+        </View>
+        {item.tags?.length > 0 && (
+          <View style={styles.tagsRow}>
+            {item.tags.slice(0, 3).map(tag => (
+              <View key={tag} style={styles.tagPill}>
+                <Text style={styles.tagText}>{tag}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
+    </View>
+  );
 }
+
+export const SwipeCard = SwipeCardComponent;
 
 const styles = StyleSheet.create({
   card: {

@@ -2,6 +2,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "@supabase/supabase-js";
 import { corsHeaders } from "../_shared/cors.ts";
+import { MOCK_ITEMS } from "./mockInspiration.ts";
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -85,10 +86,16 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { data: items } = await query;
+    let items = (await query).data ?? [];
+
+    // When DB has no (or no unseen) items, use mock outfit images
+    if (items.length === 0) {
+      const seenSet = new Set(seenIds);
+      items = MOCK_ITEMS.filter((item) => !seenSet.has(item.id)).slice(0, limit);
+    }
 
     // 6. Score and sort (in JavaScript)
-    const scored = (items ?? []).map((item: any) => ({
+    const scored = items.map((item: any) => ({
       ...item,
       score: scoreItem(item, tagScores),
     }));
