@@ -1,9 +1,25 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { SwipeCard, CARD_DIMENSIONS } from './SwipeCard';
 import { colors, typography } from '../constants/theme';
 
 const { width: CARD_WIDTH, height: CARD_HEIGHT } = CARD_DIMENSIONS;
+
+/** Non-interactive card that shows the next item's image so it loads before it becomes the top card. */
+function BackCard({ item }) {
+  const [imageError, setImageError] = useState(false);
+  if (!item) return <View style={styles.cardPlaceholder} />;
+  if (!item.image_url) return <View style={styles.cardPlaceholder} />;
+  if (imageError) return <View style={styles.cardPlaceholder} />;
+  return (
+    <Image
+      source={{ uri: item.image_url }}
+      style={styles.backCardImage}
+      resizeMode="cover"
+      onError={() => setImageError(true)}
+    />
+  );
+}
 
 export function SwipeCardStack({ items, onSwipe, renderEmpty }) {
   const [exitingId, setExitingId] = useState(null);
@@ -40,13 +56,13 @@ export function SwipeCardStack({ items, onSwipe, renderEmpty }) {
 
   return (
     <View style={styles.container}>
-      {/* Back cards - placeholders behind top card */}
+      {/* Back cards - show next items' images so they load and are visible as top card swipes */}
       {items.slice(1, 3).map((item, index) => (
         <View
           key={`back-${index}-${item.id}`}
           style={[styles.backCard, { zIndex: 2 - index }]}
         >
-          <View style={styles.cardPlaceholder} />
+          <BackCard item={item} />
         </View>
       ))}
       {/* Single top card: handles drag + exit animation, then onExitComplete */}
