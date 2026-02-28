@@ -14,6 +14,8 @@ This document is a step-by-step build plan derived from [highLevelDoc.md](highLe
 
 ### Step 0.1 — Install Node.js 18+ LTS
 
+- [x] 
+
 1. Open terminal. Run: `node -v`
 2. If version is < 18, install from [nodejs.org](https://nodejs.org) or via `nvm install 18`
 3. **Verify:** `node -v` shows 18.x or higher
@@ -23,12 +25,16 @@ This document is a step-by-step build plan derived from [highLevelDoc.md](highLe
 
 ### Step 0.2 — Install Expo CLI (global, optional)
 
+- [x] 
+
 1. Run: `npm install -g expo-cli` (optional; npx works without it)
 2. **Verify:** `npx expo --version` runs successfully
 
 ---
 
 ### Step 0.3 — Create Supabase account
+
+- [x] 
 
 1. Go to [supabase.com](https://supabase.com)
 2. Click "Start your project"
@@ -38,6 +44,8 @@ This document is a step-by-step build plan derived from [highLevelDoc.md](highLe
 ---
 
 ### Step 0.4 — Create Supabase project
+
+- [x] 
 
 1. In Supabase dashboard, click "New project"
 2. Select your Organization (or create one if prompted)
@@ -52,6 +60,8 @@ This document is a step-by-step build plan derived from [highLevelDoc.md](highLe
 
 ### Step 0.5 — Copy Supabase credentials to a safe place
 
+- [x] 
+
 1. In Supabase project, click **Project Settings** (gear icon, bottom left)
 2. Click **API** in the sidebar
 3. Copy and save:
@@ -64,6 +74,8 @@ This document is a step-by-step build plan derived from [highLevelDoc.md](highLe
 
 ### Step 0.6 — Enable Email/Password auth in Supabase
 
+- [ ] 
+
 1. In Supabase project, click **Authentication** (left sidebar)
 2. Click **Providers**
 3. Find **Email** and ensure it is **enabled** (toggle ON)
@@ -75,6 +87,8 @@ This document is a step-by-step build plan derived from [highLevelDoc.md](highLe
 ## Phase 1: Local project structure
 
 ### Step 1.1 — Ensure project root has Expo structure
+
+- [x] 
 
 1. Open project root: `/Users/bradenpeterson/Hackathon/StyleSwipe`
 2. **Verify** these files/folders exist:
@@ -89,6 +103,8 @@ This document is a step-by-step build plan derived from [highLevelDoc.md](highLe
 ---
 
 ### Step 1.2 — Create `.env` file with Supabase credentials
+
+- [x] 
 
 1. In project root, create file `.env`
 2. Add these lines (replace placeholders with your values from Step 0.5):
@@ -105,6 +121,8 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ### Step 1.3 — Install required npm dependencies
 
+- [x] 
+
 1. Open terminal in project root
 2. Run:
 
@@ -120,6 +138,8 @@ npm install @supabase/supabase-js react-native-url-polyfill react-native-gesture
 
 ### Step 1.4 — Configure Expo Router (if using file-based routing)
 
+- [x] 
+
 1. Open `app.json`
 2. Add or ensure this line exists: `"main": "expo-router/entry"`
 3. If you use Expo Router, create directory `app/` in project root
@@ -128,6 +148,8 @@ npm install @supabase/supabase-js react-native-url-polyfill react-native-gesture
 ---
 
 ### Step 1.5 — Verify Supabase client loads
+
+- [x] 
 
 1. Open `lib/supabase.js` (or `.ts`)
 2. Ensure it contains (adjust for your file):
@@ -141,6 +163,8 @@ npm install @supabase/supabase-js react-native-url-polyfill react-native-gesture
 
 ### Step 1.6 — Run the app (smoke test)
 
+- [x] 
+
 1. Run: `npm start`
 2. Press `i` for iOS simulator or `a` for Android emulator, or scan QR code with Expo Go
 3. **Verify:** App launches and shows content (even if it says "StyleSwipe" or "Open up App.js")
@@ -152,6 +176,8 @@ npm install @supabase/supabase-js react-native-url-polyfill react-native-gesture
 
 ### Step 2.1 — Open Supabase SQL Editor
 
+- [x] 
+
 1. In Supabase dashboard, click **SQL Editor** (left sidebar)
 2. Click **New query**
 3. **Verify:** You see a blank SQL editor panel
@@ -159,6 +185,8 @@ npm install @supabase/supabase-js react-native-url-polyfill react-native-gesture
 ---
 
 ### Step 2.2 — Create `profiles` table
+
+- [ ] 
 
 1. Paste the following SQL into the editor:
 
@@ -185,6 +213,8 @@ COMMENT ON COLUMN public.profiles.tag_scores IS 'Map of tag string to affinity s
 
 ### Step 2.3 — Create `inspiration_items` table
 
+- [ ] 
+
 1. In the same or a new query, paste:
 
 ```sql
@@ -203,6 +233,8 @@ CREATE TABLE public.inspiration_items (
 ---
 
 ### Step 2.4 — Create `products` table
+
+- [ ] 
 
 1. Paste:
 
@@ -229,6 +261,8 @@ CREATE TABLE public.products (
 
 ### Step 2.5 — Create `swipe_direction` enum and `swipes` table
 
+- [ ] 
+
 1. Paste:
 
 ```sql
@@ -252,6 +286,8 @@ CREATE TABLE public.swipes (
 
 ### Step 2.6 — Create indexes
 
+- [ ] 
+
 1. Paste:
 
 ```sql
@@ -273,6 +309,8 @@ CREATE INDEX idx_products_external_id ON public.products(external_id);
 
 ### Step 3.1 — Enable RLS on `profiles`
 
+- [ ] 
+
 1. In SQL Editor, paste:
 
 ```sql
@@ -290,6 +328,8 @@ CREATE POLICY "profiles_update_own" ON public.profiles FOR UPDATE USING (auth.ui
 
 ### Step 3.2 — Enable RLS on `inspiration_items`
 
+- [ ] 
+
 1. Paste:
 
 ```sql
@@ -305,6 +345,8 @@ CREATE POLICY "inspiration_select" ON public.inspiration_items FOR SELECT TO aut
 
 ### Step 3.3 — Enable RLS on `products`
 
+- [ ] 
+
 1. Paste:
 
 ```sql
@@ -319,6 +361,8 @@ CREATE POLICY "products_select" ON public.products FOR SELECT TO authenticated U
 ---
 
 ### Step 3.4 — Enable RLS on `swipes`
+
+- [ ] 
 
 1. Paste:
 
@@ -337,6 +381,8 @@ CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.u
 ## Phase 4: Mock data seeding
 
 ### Step 4.1 — Create `data` directory and mock files
+
+- [ ] 
 
 1. In project root, create directory `data/`
 2. Create file `data/mock-inspiration.json` with this structure (expand to 20+ items):
@@ -360,6 +406,8 @@ CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.u
 ---
 
 ### Step 4.2 — Create `data/mock-products.json`
+
+- [ ] 
 
 1. Create `data/mock-products.json` with structure:
 
@@ -386,6 +434,8 @@ CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.u
 ---
 
 ### Step 4.3 — Create seed script
+
+- [ ] 
 
 1. Create directory `scripts/` if it does not exist
 2. Create file `scripts/seed-inspiration.js`:
@@ -422,6 +472,8 @@ seed();
 
 ### Step 4.4 — Insert mock data via Supabase SQL Editor (alternative to script)
 
+- [ ] 
+
 1. Convert `data/mock-inspiration.json` items to SQL INSERT format. Example for one row:
 
 ```sql
@@ -436,6 +488,8 @@ INSERT INTO public.inspiration_items (id, image_url, tags, source) VALUES
 ---
 
 ### Step 4.5 — Insert mock products
+
+- [ ] 
 
 1. Similarly convert `data/mock-products.json` to SQL INSERT
 2. Example:
@@ -454,12 +508,16 @@ INSERT INTO public.products (external_id, title, brand, image_url, price, buy_ur
 
 ### Step 5.1 — Install Supabase CLI
 
+- [ ] 
+
 1. Run: `npm install -g supabase` or `brew install supabase/tap/supabase`
 2. **Verify:** `supabase --version` prints a version number
 
 ---
 
 ### Step 5.2 — Initialize Supabase in project (optional for local dev)
+
+- [ ] 
 
 1. Run: `supabase init`
 2. This creates `supabase/config.toml` and `supabase/migrations/`
@@ -470,6 +528,8 @@ INSERT INTO public.products (external_id, title, brand, image_url, price, buy_ur
 
 ### Step 5.3 — Link Supabase project to CLI
 
+- [ ] 
+
 1. Run: `supabase login` (opens browser to authenticate)
 2. Run: `supabase link --project-ref YOUR_PROJECT_REF`
    - Find YOUR_PROJECT_REF in Supabase dashboard URL: `https://app.supabase.com/project/abcdefgh` → ref is `abcdefgh`
@@ -478,6 +538,8 @@ INSERT INTO public.products (external_id, title, brand, image_url, price, buy_ur
 ---
 
 ### Step 5.4 — Create `swipe-feed` Edge Function
+
+- [ ] 
 
 1. Run: `supabase functions new swipe-feed`
 2. This creates `supabase/functions/swipe-feed/index.ts`
@@ -495,6 +557,8 @@ INSERT INTO public.products (external_id, title, brand, image_url, price, buy_ur
 
 ### Step 5.5 — Create shared CORS helper
 
+- [ ] 
+
 1. Create `supabase/functions/_shared/cors.ts` (or `cors.js`):
 
 ```typescript
@@ -509,6 +573,8 @@ export const corsHeaders = {
 ---
 
 ### Step 5.6 — Create `submit-swipe` Edge Function
+
+- [ ] 
 
 1. Run: `supabase functions new submit-swipe`
 2. Implement:
@@ -525,6 +591,8 @@ export const corsHeaders = {
 
 ### Step 5.7 — Create `updateTagScores` helper (for Edge Functions)
 
+- [ ] 
+
 1. Create `supabase/functions/_shared/tagScoring.ts` (or inline in submit-swipe)
 2. Implement exactly as in lowLevelDoc Appendix A.2:
    - Decay all tags by 0.98
@@ -536,6 +604,8 @@ export const corsHeaders = {
 
 ### Step 5.8 — Create `my-style` Edge Function
 
+- [ ] 
+
 1. Run: `supabase functions new my-style`
 2. Implement:
    - Validate JWT; `user_id` from query === JWT.sub
@@ -546,6 +616,8 @@ export const corsHeaders = {
 ---
 
 ### Step 5.9 — Create `recommendations` Edge Function
+
+- [ ] 
 
 1. Run: `supabase functions new recommendations`
 2. Implement:
@@ -559,6 +631,8 @@ export const corsHeaders = {
 
 ### Step 5.10 — Set Edge Function secrets
 
+- [ ] 
+
 1. In Supabase Dashboard → Project Settings → Edge Functions → Secrets
 2. Add:
    - `SUPABASE_URL` = your Project URL
@@ -569,6 +643,8 @@ export const corsHeaders = {
 
 ### Step 5.11 — Deploy Edge Functions
 
+- [ ] 
+
 1. Run: `supabase functions deploy swipe-feed`
 2. Run: `supabase functions deploy submit-swipe`
 3. Run: `supabase functions deploy my-style`
@@ -578,6 +654,8 @@ export const corsHeaders = {
 ---
 
 ### Step 5.12 — Test swipe-feed with curl
+
+- [ ] 
 
 1. Sign up a test user in Supabase Authentication → Users → Add user (or via app)
 2. Copy the user's JWT (from app session or create via API)
@@ -595,6 +673,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 6.1 — Create auth context or session hook
 
+- [ ] 
+
 1. Create `contexts/AuthContext.jsx` (or `AuthContext.tsx`)
 2. Use `supabase.auth.getSession()` and `supabase.auth.onAuthStateChange()`
 3. Expose: `user`, `loading`, `signOut`, `signIn`, `signUp`
@@ -603,6 +683,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 6.2 — Create Sign Up screen
+
+- [ ] 
 
 1. Create route: `app/(auth)/sign-up.jsx` or a dedicated screen component
 2. Fields: email (text input), password (secure text input)
@@ -615,6 +697,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 6.3 — Create Login screen
 
+- [ ] 
+
 1. Create route: `app/(auth)/login.jsx`
 2. Fields: email, password
 3. On submit: `supabase.auth.signInWithPassword({ email, password })`
@@ -624,6 +708,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 6.4 — Create profile on first sign-in (trigger or client)
+
+- [ ] 
 
 1. Option A: Database trigger that inserts into `profiles` when `auth.users` gets new row
 2. Option B: In client, after signUp/signIn, call `supabase.from('profiles').upsert({ id: user.id }, { onConflict: 'id' })`
@@ -635,6 +721,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 7.1 — Create onboarding route group
 
+- [ ] 
+
 1. Create `app/onboarding/_layout.jsx` with a stack navigator
 2. Create `app/onboarding/index.jsx` (Welcome screen)
 3. **Verify:** Route `onboarding` is navigable
@@ -642,6 +730,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 7.2 — Welcome screen
+
+- [ ] 
 
 1. Content: "Learn your style by swiping" + "Get Started" and "Skip" buttons
 2. "Get Started" → navigate to `onboarding/style`
@@ -652,6 +742,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 7.3 — Style Picker screen
 
+- [ ] 
+
 1. Display multi-select list of style tags from taxonomy (Section 2.1): minimalist, bohemian, streetwear, etc.
 2. User taps to select/deselect
 3. "Next" → navigate to Color Picker; pass selections in state or context
@@ -661,6 +753,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 7.4 — Color Picker screen
 
+- [ ] 
+
 1. Display color tags: black, white, navy, etc.
 2. Multi-select; "Next" → Category Picker
 4. **Verify:** Selections stored
@@ -668,6 +762,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 7.5 — Category Picker screen
+
+- [ ] 
 
 1. Display category tags: tops, bottoms, dresses, etc.
 2. "Complete" → call `supabase.from('profiles').upsert({ id: user.id, has_onboarded: true, preferred_styles: [...], preferred_colors: [...], preferred_categories: [...] })`
@@ -681,6 +777,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 8.1 — Create Discover tab/screen
 
+- [ ] 
+
 1. Create `app/(tabs)/index.jsx` (or equivalent for Discover)
 2. Screen fetches feed on mount
 3. **Verify:** Screen is the default tab
@@ -688,6 +786,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 8.2 — Implement `useSwipeFeed` hook
+
+- [ ] 
 
 1. Create `hooks/useSwipeFeed.js` (or `.ts`)
 2. State: `queue` (array of items), `loading`, `error`
@@ -700,6 +800,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 8.3 — Create SwipeCard component
 
+- [ ] 
+
 1. Install and use `react-native-gesture-handler` and `react-native-reanimated`
 2. Wrap card in `GestureDetector` with `Pan` gesture
 3. On drag: rotate card ±15° based on x offset; animate opacity
@@ -711,6 +813,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 8.4 — Create card stack
 
+- [ ] 
+
 1. Render 3 cards: top card interactive, next 2 beneath (scaled 0.95, offset)
 2. Use `position: absolute` or `zIndex` so cards stack
 3. On swipe: animate top card off-screen (e.g. translateX to 500 or -500)
@@ -720,6 +824,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 8.5 — Wire Discover screen to hook and cards
+
+- [ ] 
 
 1. Call `useSwipeFeed(userId)`
 2. Map `queue` to card stack; pass top item to SwipeCard
@@ -735,12 +841,16 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 9.1 — Create My Style tab/screen
 
+- [ ] 
+
 1. Create `app/(tabs)/my-style.jsx`
 2. **Verify:** Tab appears in tab bar
 
 ---
 
 ### Step 9.2 — Fetch liked inspiration
+
+- [ ] 
 
 1. On mount (or tab focus): call Edge Function `my-style` with `user_id`
 2. Store result in state or React Query
@@ -750,6 +860,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 9.3 — Display Style DNA banner
 
+- [ ] 
+
 1. Fetch profile `tag_scores` (from Supabase `profiles` table or include in my-style response)
 2. Compute top 5 tags: sort by score desc, tie-break by name asc, take first 5
 3. Display as chips or badges: "Your style: minimalist, black, casual, cotton, tops"
@@ -758,6 +870,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 9.4 — Display liked items grid
+
+- [ ] 
 
 1. Use `FlatList` or `ScrollView` with 2 columns
 2. Each cell: image (aspect 4:5), optional caption
@@ -770,12 +884,16 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 10.1 — Create Recommendations tab
 
+- [ ] 
+
 1. Create `app/(tabs)/recommendations.jsx`
 2. **Verify:** Tab appears
 
 ---
 
 ### Step 10.2 — Fetch recommendations
+
+- [ ] 
 
 1. On mount/tab focus: call Edge Function `recommendations` with `user_id`, `limit=20`
 2. Store in state or React Query
@@ -785,6 +903,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 10.3 — Display product grid
 
+- [ ] 
+
 1. Grid, 2 columns
 2. Each card: image, brand, title, price, "Buy Now" button
 3. **Verify:** Layout matches Section 9.4
@@ -792,6 +912,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 10.4 — Implement Buy Now
+
+- [ ] 
 
 1. On "Buy Now" tap: `Linking.openURL(product.buy_url)` or `expo-web-browser.openBrowserAsync(product.buy_url)`
 2. **Verify:** Opens product URL in browser
@@ -802,12 +924,16 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 11.1 — Create Profile tab
 
+- [ ] 
+
 1. Create `app/(tabs)/profile.jsx`
 2. Display: user email (from session), optional avatar
 
 ---
 
 ### Step 11.2 — Logout button
+
+- [ ] 
 
 1. On tap: `supabase.auth.signOut()`
 2. Clear any local caches (feed queue, React Query cache)
@@ -817,6 +943,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 11.3 — Theme toggle (optional)
+
+- [ ] 
 
 1. Add toggle for light/dark mode
 2. Store preference in AsyncStorage or profile
@@ -828,6 +956,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 12.1 — Define tab layout
 
+- [ ] 
+
 1. Create `app/(tabs)/_layout.jsx`
 2. Tabs: Discover (index), My Style, Recommendations, Profile
 3. Icons and labels for each tab
@@ -836,6 +966,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 12.2 — Auth gate
+
+- [ ] 
 
 1. If no session: show Sign Up / Login (or redirect to auth stack)
 2. If session exists and `has_onboarded` false: redirect to onboarding
@@ -848,6 +980,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 13.1 — Global error handling
 
+- [ ] 
+
 1. Wrap app in error boundary (optional)
 2. For network errors: show "Check your connection" + Retry
 3. For 401: redirect to login
@@ -857,6 +991,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 13.2 — Placeholder for dead images
 
+- [ ] 
+
 1. Use `Image` component with `onError` handler
 2. On error: show fallback image (e.g. `assets/placeholder-card.png`)
 3. **Verify:** Broken image URLs don't show broken icon; placeholder appears
@@ -864,6 +1000,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 13.3 — Haptic feedback on swipe
+
+- [ ] 
 
 1. Import `expo-haptics`
 2. On like: `Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)`
@@ -876,6 +1014,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 14.1 — Unit test: updateTagScores
 
+- [ ] 
+
 1. Create `__tests__/tagScoring.test.js`
 2. Test cases from lowLevelDoc Section 13.1
 3. Run: `npm test` (if Jest configured)
@@ -884,6 +1024,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 14.2 — Integration test: swipe flow
+
+- [ ] 
 
 1. Use Supabase local or test project
 2. Seed test data; create test user
@@ -897,6 +1039,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 15.1 — EAS Build setup
 
+- [ ] 
+
 1. Run: `npm install -g eas-cli`
 2. Run: `eas login`
 3. Run: `eas build:configure`
@@ -906,6 +1050,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 15.2 — Build for iOS (TestFlight)
 
+- [ ] 
+
 1. Run: `eas build --platform ios --profile preview`
 2. Wait for build to complete
 3. Run: `eas submit --platform ios` to upload to TestFlight
@@ -914,6 +1060,8 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 ---
 
 ### Step 15.3 — Build for Android
+
+- [ ] 
 
 1. Run: `eas build --platform android --profile preview`
 2. Download APK or submit to Play Store
