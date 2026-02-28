@@ -470,7 +470,7 @@ export const corsHeaders = {
 
 ### Step 5.3 — Create `submit-swipe` Edge Function
 
-- [ ] 
+- [x] 
 
 1. Run: `supabase functions new submit-swipe`
 2. Implement:
@@ -487,7 +487,7 @@ export const corsHeaders = {
 
 ### Step 5.4 — Create `updateTagScores` helper (for Edge Functions)
 
-- [ ] 
+- [x] 
 
 1. Create `supabase/functions/_shared/tagScoring.ts` (or inline in submit-swipe)
 2. Implement exactly as in lowLevelDoc Appendix A.2:
