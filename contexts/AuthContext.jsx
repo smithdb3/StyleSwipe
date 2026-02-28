@@ -54,6 +54,15 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  const ensureProfile = async (userId) => {
+    const { error } = await supabase
+      .from('profiles')
+      .upsert({ id: userId }, { onConflict: 'id' });
+    if (error) {
+      console.error('Profile upsert failed:', error);
+    }
+  };
+
   const signIn = async ({ email, password }) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -61,6 +70,9 @@ export const AuthProvider = ({ children }) => {
     });
     if (error) {
       throw error;
+    }
+    if (data?.user?.id) {
+      await ensureProfile(data.user.id);
     }
     return data;
   };
@@ -72,6 +84,9 @@ export const AuthProvider = ({ children }) => {
     });
     if (error) {
       throw error;
+    }
+    if (data?.user?.id) {
+      await ensureProfile(data.user.id);
     }
     return data;
   };

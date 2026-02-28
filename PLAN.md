@@ -593,7 +593,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 6.3 — Create Login screen
 
-- [ ] 
+- [x] 
 
 1. Create route: `app/(auth)/login.jsx`
 2. Fields: email, password
@@ -605,7 +605,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 6.4 — Create profile on first sign-in (trigger or client)
 
-- [ ] 
+- [x] 
 
 1. Option A: Database trigger that inserts into `profiles` when `auth.users` gets new row
 2. Option B: In client, after signUp/signIn, call `supabase.from('profiles').upsert({ id: user.id }, { onConflict: 'id' })`
