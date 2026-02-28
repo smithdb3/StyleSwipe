@@ -736,7 +736,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 9.1 — Create My Style tab/screen
 
-- [ ] 
+- [x] 
 
 1. Create `app/(tabs)/my-style.jsx`
 2. **Verify:** Tab appears in tab bar
@@ -745,7 +745,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 9.2 — Fetch liked inspiration
 
-- [ ] 
+- [x] 
 
 1. On mount (or tab focus): call Edge Function `my-style` with `user_id`
 2. Store result in state or React Query
@@ -755,7 +755,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 9.3 — Display Style DNA banner
 
-- [ ] 
+- [x] 
 
 1. Fetch profile `tag_scores` (from Supabase `profiles` table or include in my-style response)
 2. Compute top 5 tags: sort by score desc, tie-break by name asc, take first 5
@@ -766,7 +766,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 9.4 — Display liked items grid
 
-- [ ] 
+- [x] 
 
 1. Use `FlatList` or `ScrollView` with 2 columns
 2. Each cell: image (aspect 4:5), optional caption
