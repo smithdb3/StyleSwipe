@@ -360,7 +360,7 @@ CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.u
 
 ### Step 3.3 — Create seed script
 
-- [ ] 
+- [x] 
 
 1. Create directory `scripts/` if it does not exist
 2. Create file `scripts/seed-inspiration.js`:
@@ -397,7 +397,7 @@ seed();
 
 ### Step 3.4 — Insert mock data via Supabase SQL Editor (alternative to script)
 
-- [ ] 
+- [x] 
 
 1. Convert `data/mock-inspiration.json` items to SQL INSERT format. Example for one row:
 
@@ -414,7 +414,7 @@ INSERT INTO public.inspiration_items (id, image_url, tags, source) VALUES
 
 ### Step 3.5 — Insert mock products
 
-- [ ] 
+- [x] 
 
 1. Similarly convert `data/mock-products.json` to SQL INSERT
 2. Example:
