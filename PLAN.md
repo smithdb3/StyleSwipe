@@ -230,7 +230,7 @@ CREATE TABLE public.products (
   title text NOT NULL,
   brand text,
   image_url text NOT NULL,
-  price text NOT NULL,
+  price numeric(10, 2) NOT NULL,
   buy_url text NOT NULL,
   tags text[] NOT NULL DEFAULT '{}',
   metadata jsonb DEFAULT '{}'
@@ -238,6 +238,7 @@ CREATE TABLE public.products (
 
 CREATE TYPE swipe_direction AS ENUM ('like', 'skip');
 
+-- Users swipe on inspiration_items; product recommendations derive from tag affinity (shared tags)
 CREATE TABLE public.swipes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -247,13 +248,28 @@ CREATE TABLE public.swipes (
   UNIQUE (user_id, item_id)
 );
 
--- Indexes
+-- Auto-update updated_at on profiles and products
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER handle_profiles_updated_at
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_products_updated_at
+  BEFORE UPDATE ON public.products
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+-- Indexes (UNIQUE constraints already index user_id+item_id and external_id)
 CREATE INDEX idx_swipes_user_id ON public.swipes(user_id);
 CREATE INDEX idx_swipes_item_id ON public.swipes(item_id);
-CREATE INDEX idx_swipes_user_item ON public.swipes(user_id, item_id);
 CREATE INDEX idx_inspiration_items_tags ON public.inspiration_items USING GIN(tags);
 CREATE INDEX idx_products_tags ON public.products USING GIN(tags);
-CREATE INDEX idx_products_external_id ON public.products(external_id);
 
 -- RLS
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
@@ -278,7 +294,7 @@ CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.u
 
 ### Step 2.3 — Apply migrations to remote database
 
-- [ ] 
+- [x] 
 
 1. From project root, run: `supabase db push`
 2. **Verify:** Output shows migration(s) applied successfully
