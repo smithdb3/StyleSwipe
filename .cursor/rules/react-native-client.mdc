@@ -1,0 +1,33 @@
+---
+description: React Native/Expo client patterns and Supabase integration
+globs: app/**/*.{js,jsx,ts,tsx},contexts/**/*,components/**/*,hooks/**/*,lib/supabase.js
+alwaysApply: false
+---
+
+# React Native Client Patterns
+
+## Components
+
+- Use functional components only
+- Extract custom hooks for reusable logic (e.g. `useSwipeFeed`, `useAuth`)
+
+## Auth and Navigation
+
+- Auth: `useAuth()` from `contexts/AuthContext`; provides `user`, `loading`, `signIn`, `signUp`, `signOut`
+- Navigation: `expo-router` — `useRouter()`, `router.replace()`, `router.push()`
+
+## Styling
+
+- Use `StyleSheet.create` colocated with the component (see `app/(auth)/sign-up.jsx`)
+
+## Error, Loading, Empty States
+
+- Error: Set `error` state; show message + Retry button. On 401, redirect to login
+- Loading: `ActivityIndicator` or skeleton
+- Empty (per lowLevelDoc §9.5): Discover "No more inspiration for now"; My Style "Nothing saved yet — start swiping"; Recommendations "Swipe more to get recommendations"
+
+## Edge Function Calls
+
+- Pass JWT via `Authorization: Bearer <token>` when invoking Edge Functions
+- Get token: `const { data } = await supabase.auth.getSession(); data.session?.access_token`
+- Use `supabase.functions.invoke("name", { method, body, headers })` with body/query shape per lowLevelDoc §6 (swipe-feed, submit-swipe, my-style, recommendations)

@@ -1,0 +1,27 @@
+---
+description: Tag taxonomy, scoring logic, and API data contracts
+globs: supabase/functions/**/*.ts,**/tagScoring*
+alwaysApply: false
+---
+
+# Tags and Data Contracts
+
+## Tag Taxonomy
+
+- Tags must be **lowercase** and from lowLevelDoc §2.1 (style, color, material, occasion, category, fit, pattern)
+- Example categories: minimalist, bohemian, black, cotton, casual, tops, slim, solid
+
+## Tag Scoring
+
+- Use `updateTagScores` from `supabase/functions/_shared/tagScoring.ts`
+- Constants: `LIKE_BOOST=0.15`, `SKIP_PENALTY=0.05`, `DECAY_FACTOR=0.98`
+
+## Data Shapes
+
+- **InspirationItem:** `{ id: string, image_url: string, tags: string[], source?: string }`
+- **Product:** `{ id, title, brand, image_url, price, buy_url, tags }`
+- **Swipe direction:** `"like" | "skip"` only
+
+## Cold Start
+
+- If user has <5 swipes or empty `tag_scores`, return random products (e.g. `ORDER BY random()` or `created_at DESC`)

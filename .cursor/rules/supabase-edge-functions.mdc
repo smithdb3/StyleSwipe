@@ -1,0 +1,55 @@
+---
+description: Supabase Edge Function patterns (Deno, CORS, JWT, errors)
+globs: supabase/functions/**/*.ts
+alwaysApply: false
+---
+
+# Supabase Edge Functions
+
+## Runtime
+
+```typescript
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { corsHeaders } from "../_shared/cors.ts";
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+  // ...
+});
+```
+
+## CORS
+
+- Handle OPTIONS immediately with `corsHeaders`
+- Include `...corsHeaders` and `"Content-Type": "application/json"` on all JSON responses
+
+## Auth
+
+- Require `Authorization: Bearer <jwt>` header; return 401 if missing
+- Use `supabase.auth.getUser(jwt)` to verify
+- Ensure `user_id` in request body/query equals `user.id`; return 403 if mismatch
+
+## Supabase Client
+
+```typescript
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+);
+```
+
+## Error Format
+
+- Body: `{ "message": string, "code"?: string }`
+- 400 validation, 401 missing token, 403 forbidden, 500 server error
+
+## Shared Code
+
+- Import from `../_shared/` (e.g. `cors.ts`, `tagScoring.ts`)
+
+## Logging
+
+- No PII (emails, etc.) in logs
+- Use `console.error` for errors with contextual info (e.g. function name, error message)
