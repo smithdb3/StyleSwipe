@@ -729,6 +729,47 @@ CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.u
 
 ## 9. UI / component breakdown
 
+### 9.0 Color system
+
+All UI colors reference this palette. Use these exact hex values as constants in your theme/token file (e.g. `constants/colors.ts` or a Tailwind/NativeWind config).
+
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `primary` | `#4F6F60` | Primary actions (buttons, active tab, CTA), key interactive elements |
+| `secondary` | `#7E9C8B` | Secondary buttons, hover/pressed states, accent highlights |
+| `background` | `#F4F6F5` | App-level background (root `<View>` / `backgroundColor`) |
+| `surface` | `#FFFFFF` | Cards, modals, bottom sheets, input fields |
+| `text` | `#111827` | All body text, headings, labels |
+
+**Derived guidance:**
+
+- **Primary button:** background `#4F6F60`, text `#FFFFFF`.
+- **Secondary / ghost button:** border `#4F6F60`, text `#4F6F60`, transparent background.
+- **Active tab icon / indicator:** `#4F6F60`.
+- **Inactive tab icon:** `#7E9C8B` or desaturated variant.
+- **Card surface:** `#FFFFFF` with a subtle shadow (`rgba(0,0,0,0.06)`).
+- **Screen background:** `#F4F6F5`.
+- **Headings:** `#111827` (weight 700).
+- **Body / secondary text:** `#111827` at ~70% opacity (`rgba(17,24,39,0.7)`), or a slightly lighter gray if preferred.
+- **Disabled state:** `#7E9C8B` at 50% opacity for buttons; `#111827` at 40% opacity for text.
+
+**Implementation (React Native / Expo):**
+
+```typescript
+// constants/colors.ts
+export const Colors = {
+  primary:    '#4F6F60',
+  secondary:  '#7E9C8B',
+  background: '#F4F6F5',
+  surface:    '#FFFFFF',
+  text:       '#111827',
+} as const;
+```
+
+Reference `Colors.primary`, `Colors.background`, etc. throughout all style sheets and NativeWind/Tailwind overrides. Do not hard-code hex values outside this file.
+
+---
+
 ### 9.1 Screen list
 
 | Screen | Route (Expo Router) | Data fetched | Supabase / Edge Function |
