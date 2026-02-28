@@ -569,7 +569,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 6.1 — Create auth context or session hook
 
-- [ ] 
+- [x] 
 
 1. Create `contexts/AuthContext.jsx` (or `AuthContext.tsx`)
 2. Use `supabase.auth.getSession()` and `supabase.auth.onAuthStateChange()`

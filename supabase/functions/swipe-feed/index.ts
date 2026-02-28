@@ -25,7 +25,12 @@ Deno.serve(async (req: Request) => {
     }
 
     const authHeader = req.headers.get("authorization");
-    if (!authHeader) throw new Error("Missing authorization header");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ message: "Missing authorization header" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     const jwt = authHeader.replace("Bearer ", "");
 

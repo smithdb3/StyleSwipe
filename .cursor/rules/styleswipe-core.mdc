@@ -1,0 +1,31 @@
+---
+description: StyleSwipe project conventions and doc references
+alwaysApply: true
+---
+
+# StyleSwipe Core
+
+## Implementation Specs
+
+Use [PLAN.md](PLAN.md) and [lowLevelDoc.md](lowLevelDoc.md) as the authoritative implementation specs. Reference section numbers when implementing features.
+
+## Conventions
+
+- **IDs:** UUID v4 for all entity IDs
+- **Timestamps:** ISO8601 in UTC
+- **Tags:** Lowercase only; must come from the taxonomy in lowLevelDoc §2.1 (style, color, material, occasion, category, fit, pattern)
+
+## Environment
+
+- **Client:** `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY` (from `.env`)
+- **Edge Functions:** `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (Supabase secrets)
+- Never put service role key or other secrets in client code
+- Never commit `.env`; use `.env.example` with placeholders
+
+## Project Layout
+
+- `app/` — Expo Router screens (file-based routing)
+- `contexts/` — React contexts (e.g. AuthContext)
+- `lib/` — Shared utilities, Supabase client
+- `supabase/functions/` — Edge Functions
+- `supabase/functions/_shared/` — Shared Edge Function modules (cors.ts, tagScoring.ts)
