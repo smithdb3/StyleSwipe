@@ -636,14 +636,13 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ---
 
-### Step 7.3 — Style Picker screen
+### Step 7.3 — Style Picker screen (swipe baseline)
 
-- [ ] 
+- [x] 
 
-1. Display multi-select list of style tags from taxonomy (Section 2.1): minimalist, bohemian, streetwear, etc.
-2. User taps to select/deselect
-3. "Next" → navigate to Color Picker; pass selections in state or context
-4. **Verify:** Selections are stored (state/context)
+1. **Implemented as image-swipe baseline:** Same swipe UI as Discover; uses `swipe-feed` and `submit-swipe`. User swipes on inspiration images; likes/skips build `tag_scores` and persist. "Done" sets `has_onboarded = true` and navigates to home. Reusable `useSwipeFeed` hook and `SwipeCardStack` for Discover (Phase 8).
+2. **Verify:** Swipes call submit-swipe; Done updates profile and navigates away.
+3. **Note:** Steps 7.4 (Color) and 7.5 (Category) are skipped in this flow; onboarding is Welcome → Swipe baseline → Done → Discover.
 
 ---
 
