@@ -360,7 +360,7 @@ CREATE POLICY "swipes_insert_own" ON public.swipes FOR INSERT WITH CHECK (auth.u
 
 ### Step 3.3 — Create seed script
 
-- [ ] 
+- [x] 
 
 1. Create directory `scripts/` if it does not exist
 2. Create file `scripts/seed-inspiration.js`:
@@ -397,7 +397,7 @@ seed();
 
 ### Step 3.4 — Insert mock data via Supabase SQL Editor (alternative to script)
 
-- [ ] 
+- [x] 
 
 1. Convert `data/mock-inspiration.json` items to SQL INSERT format. Example for one row:
 
@@ -414,7 +414,7 @@ INSERT INTO public.inspiration_items (id, image_url, tags, source) VALUES
 
 ### Step 3.5 — Insert mock products
 
-- [ ] 
+- [x] 
 
 1. Similarly convert `data/mock-products.json` to SQL INSERT
 2. Example:
@@ -435,7 +435,7 @@ INSERT INTO public.products (external_id, title, brand, image_url, price, buy_ur
 
 ### Step 5.1 — Create `swipe-feed` Edge Function
 
-- [ ] 
+- [x] 
 
 1. Run: `supabase functions new swipe-feed` (requires Supabase CLI from Phase 2)
 2. This creates `supabase/functions/swipe-feed/index.ts`
@@ -453,7 +453,7 @@ INSERT INTO public.products (external_id, title, brand, image_url, price, buy_ur
 
 ### Step 5.2 — Create shared CORS helper
 
-- [ ] 
+- [x] 
 
 1. Create `supabase/functions/_shared/cors.ts` (or `cors.js`):
 
@@ -470,7 +470,7 @@ export const corsHeaders = {
 
 ### Step 5.3 — Create `submit-swipe` Edge Function
 
-- [ ] 
+- [x] 
 
 1. Run: `supabase functions new submit-swipe`
 2. Implement:
@@ -487,7 +487,7 @@ export const corsHeaders = {
 
 ### Step 5.4 — Create `updateTagScores` helper (for Edge Functions)
 
-- [ ] 
+- [x] 
 
 1. Create `supabase/functions/_shared/tagScoring.ts` (or inline in submit-swipe)
 2. Implement exactly as in lowLevelDoc Appendix A.2:
@@ -500,7 +500,7 @@ export const corsHeaders = {
 
 ### Step 5.5 — Create `my-style` Edge Function
 
-- [ ] 
+- [x] 
 
 1. Run: `supabase functions new my-style`
 2. Implement:
@@ -513,7 +513,7 @@ export const corsHeaders = {
 
 ### Step 5.6 — Create `recommendations` Edge Function
 
-- [ ] 
+- [x] 
 
 1. Run: `supabase functions new recommendations`
 2. Implement:
@@ -527,7 +527,7 @@ export const corsHeaders = {
 
 ### Step 5.7 — Set Edge Function secrets
 
-- [ ] 
+- [x] 
 
 1. In Supabase Dashboard → Project Settings → Edge Functions → Secrets
 2. Add:
@@ -539,7 +539,7 @@ export const corsHeaders = {
 
 ### Step 5.8 — Deploy Edge Functions
 
-- [ ] 
+- [x] 
 
 1. Run: `supabase functions deploy swipe-feed`
 2. Run: `supabase functions deploy submit-swipe`
@@ -551,7 +551,7 @@ export const corsHeaders = {
 
 ### Step 5.9 — Test swipe-feed with curl
 
-- [ ] 
+- [x] 
 
 1. Sign up a test user in Supabase Authentication → Users → Add user (or via app)
 2. Copy the user's JWT (from app session or create via API)
