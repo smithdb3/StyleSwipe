@@ -42,7 +42,7 @@ export default function SignUpScreen() {
     setLoading(true);
     try {
       await signUp({ email: email.trim(), password });
-      router.replace('/');
+      router.replace('/onboarding');
     } catch (err) {
       setError(err.message || 'Sign up failed. Please try again.');
     } finally {

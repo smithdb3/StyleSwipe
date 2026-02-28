@@ -617,7 +617,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 7.1 — Create onboarding route group
 
-- [ ] 
+- [x] 
 
 1. Create `app/onboarding/_layout.jsx` with a stack navigator
 2. Create `app/onboarding/index.jsx` (Welcome screen)
@@ -627,7 +627,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 7.2 — Welcome screen
 
-- [ ] 
+- [x] 
 
 1. Content: "Learn your style by swiping" + "Get Started" and "Skip" buttons
 2. "Get Started" → navigate to `onboarding/style`
