@@ -193,7 +193,7 @@ All schema changes live in the codebase as migration files and are applied with 
 
 ### Step 2.2 — Create schema migration file
 
-- [ ] 
+- [x] 
 
 1. Create a new migration file in `supabase/migrations/` with a timestamp prefix, e.g. `supabase/migrations/20240227000000_initial_schema.sql`
    - You can run `supabase migration new initial_schema` to generate the filename, or create it manually
