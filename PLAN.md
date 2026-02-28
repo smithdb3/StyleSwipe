@@ -500,7 +500,7 @@ export const corsHeaders = {
 
 ### Step 5.5 — Create `my-style` Edge Function
 
-- [ ] 
+- [x] 
 
 1. Run: `supabase functions new my-style`
 2. Implement:
@@ -513,7 +513,7 @@ export const corsHeaders = {
 
 ### Step 5.6 — Create `recommendations` Edge Function
 
-- [ ] 
+- [x] 
 
 1. Run: `supabase functions new recommendations`
 2. Implement:
@@ -527,7 +527,7 @@ export const corsHeaders = {
 
 ### Step 5.7 — Set Edge Function secrets
 
-- [ ] 
+- [x] 
 
 1. In Supabase Dashboard → Project Settings → Edge Functions → Secrets
 2. Add:
