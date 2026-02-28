@@ -116,11 +116,13 @@ const styles = StyleSheet.create({
     ...typography.title,
     color: colors.text,
     marginBottom: spacing.sm,
+    textAlign: 'center',
   },
   subtitle: {
     ...typography.subtitle,
     color: colors.textSecondary,
     marginBottom: spacing.xl,
+    textAlign: 'center',
   },
   stackWrap: {
     flex: 1,
@@ -146,6 +148,9 @@ const styles = StyleSheet.create({
   retryButton: {
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
+    minHeight: minTouchTarget,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   retryButtonText: {
     ...typography.link,
