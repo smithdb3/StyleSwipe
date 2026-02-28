@@ -779,7 +779,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 10.1 — Create Recommendations tab
 
-- [ ] 
+- [x] 
 
 1. Create `app/(tabs)/recommendations.jsx`
 2. **Verify:** Tab appears
@@ -788,7 +788,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 10.2 — Fetch recommendations
 
-- [ ] 
+- [x] 
 
 1. On mount/tab focus: call Edge Function `recommendations` with `user_id`, `limit=20`
 2. Store in state or React Query
@@ -798,7 +798,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 10.3 — Display product grid
 
-- [ ] 
+- [x] 
 
 1. Grid, 2 columns
 2. Each card: image, brand, title, price, "Buy Now" button
@@ -808,7 +808,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 10.4 — Implement Buy Now
 
-- [ ] 
+- [x] 
 
 1. On "Buy Now" tap: `Linking.openURL(product.buy_url)` or `expo-web-browser.openBrowserAsync(product.buy_url)`
 2. **Verify:** Opens product URL in browser
