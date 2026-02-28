@@ -12,7 +12,7 @@ export default function IndexScreen() {
     if (!user) {
       router.replace('/sign-up');
     } else {
-      router.replace('/home');
+      router.replace('/(tabs)/discover');
     }
   }, [user, loading]);
 

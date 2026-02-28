@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Logo
 
-- Use **`misc/logo_cropped.png`** as the logo for all branding and UI applications across the entire application.
+- Use **`assets/logo_cropped.png`** as the logo for all branding and UI applications across the entire application.
 
 # Colors and Theming
 

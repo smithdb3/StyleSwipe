@@ -31,7 +31,7 @@ export default function WelcomeScreen() {
         .eq('id', user.id);
 
       if (error) throw error;
-      router.replace('/home');
+      router.replace('/(tabs)/discover');
     } catch (err) {
       console.error('Skip onboarding failed:', err);
       setLoading(false);
