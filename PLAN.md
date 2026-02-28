@@ -580,7 +580,7 @@ curl -H "Authorization: Bearer YOUR_JWT" "https://YOUR_PROJECT_REF.supabase.co/f
 
 ### Step 6.2 — Create Sign Up screen
 
-- [ ] 
+- [x] 
 
 1. Create route: `app/(auth)/sign-up.jsx` or a dedicated screen component
 2. Fields: email (text input), password (secure text input)
