@@ -100,15 +100,13 @@ export function useSwipeFeed(userId, initialLimit = 20) {
   const submitSwipe = useCallback(
     async (itemId, direction) => {
       if (!userId) return;
-      if (!USE_MOCK_FEED) {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const token = sessionData?.session?.access_token;
-        if (token) {
-          try {
-            await postSubmitSwipe(token, userId, itemId, direction);
-          } catch (e) {
-            console.error('Submit swipe error:', e);
-          }
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (token) {
+        try {
+          await postSubmitSwipe(token, userId, itemId, direction);
+        } catch (e) {
+          console.error('Submit swipe error:', e);
         }
       }
       setQueue((prev) => {

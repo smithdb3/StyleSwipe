@@ -52,9 +52,10 @@ export default function MyStyleScreen() {
 
   const horizontalPadding = spacing.xl + Math.max(insets.left, insets.right);
   const gap = spacing.sm;
-  const contentWidth = windowWidth - horizontalPadding * 2;
-  const itemWidth = (contentWidth - gap) / NUM_COLUMNS;
+  const contentWidth = Math.max(0, windowWidth - horizontalPadding * 2);
+  const itemWidth = contentWidth > 0 ? (contentWidth - gap) / NUM_COLUMNS : 0;
   const itemHeight = itemWidth * ASPECT_RATIO;
+  const hasValidDimensions = itemWidth > 0 && itemHeight > 0;
 
   const padding = {
     paddingTop: insets.top + spacing.lg,
@@ -63,7 +64,20 @@ export default function MyStyleScreen() {
   };
 
   if (!user) {
-    return null;
+    return (
+      <View style={[styles.container, padding]}>
+        <View style={styles.emptyWrap}>
+          <Text style={styles.emptyTitle}>Sign in to see your style</Text>
+          <TouchableOpacity
+            style={styles.discoverLink}
+            onPress={() => router.replace('/login')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.discoverLinkText}>Sign in</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
   }
 
   if (loading && items.length === 0) {
@@ -103,6 +117,10 @@ export default function MyStyleScreen() {
           >
             <Text style={styles.discoverLinkText}>Go to Discover</Text>
           </TouchableOpacity>
+        </View>
+      ) : !hasValidDimensions ? (
+        <View style={styles.emptyWrap}>
+          <Text style={styles.loadingText}>Loading...</Text>
         </View>
       ) : (
         <FlatList
@@ -203,6 +221,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
   },
   row: {
+    flexDirection: 'row',
     gap: spacing.sm,
   },
   gridItemWrap: {

@@ -71,10 +71,10 @@ Deno.serve(async (req: Request) => {
 
     if (error) throw error;
 
-    // Extract items from join result; filter out nulls (deleted inspiration items)
+    // Extract items from join result (PostgREST may return nested row under table name or FK column); filter out nulls (deleted inspiration items)
     const items = (rows ?? [])
-      .map((r: { inspiration_items: Record<string, unknown> | null }) =>
-        r.inspiration_items
+      .map((r: { item_id?: Record<string, unknown> | null; inspiration_items?: Record<string, unknown> | null }) =>
+        r.item_id ?? r.inspiration_items
       )
       .filter(Boolean) as Array<{ id: string; image_url: string; tags: string[]; source?: string }>;
 
